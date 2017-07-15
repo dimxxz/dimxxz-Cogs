@@ -1,0 +1,8 @@
+{
+    "AUTHOR" : "dimxxz",
+    "INSTALL_MSG" : "Thank you for installing this welcome cog! I hope it will be useful to you!",
+    "NAME" : "welcome cog",
+    "SHORT" : "welcome",
+    "DESCRIPTION" : "Welcomes new users and also says them goodbye when they leave."
+	  "TAGS": ["utility"]
+}
