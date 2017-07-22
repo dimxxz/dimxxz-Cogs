@@ -4,17 +4,18 @@ Rewritten, modified and improved by me, dimxxz
 
 Commands:
 
-[p]marry [user]\n
-[p]marryit [thing]				*for people that want to marry non-users\n
-[p]forcemarry [user1] [user2]\n
-[p]divorce [ID] [user]\n
-[p]forcedivorce [ID]			*if the normal divorce fails or a user leaves the server\n
-[p]massdivorce\n
-[p]setmarrylimit				*default is set to 1\n
-[p]marrylimit\n
-[p]marriagetoggle\n
-[p]marrycount\n
-
+'''
+[p]marry [user]
+[p]marryit [thing]				*for people that want to marry non-users
+[p]forcemarry [user1] [user2]
+[p]divorce [ID] [user]
+[p]forcedivorce [ID]			*if the normal divorce fails or a user leaves the server
+[p]massdivorce
+[p]setmarrylimit				*default is set to 1
+[p]marrylimit
+[p]marriagetoggle
+[p]marrycount
+'''
 
 Replace `[p]` with your bot's prefix.
 
