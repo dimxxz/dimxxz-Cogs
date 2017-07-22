@@ -4,7 +4,7 @@ Rewritten, modified and improved by me, dimxxz
 
 Commands:
 
-'''
+```
 [p]marry [user]
 [p]marryit [thing]				*for people that want to marry non-users
 [p]forcemarry [user1] [user2]
@@ -15,7 +15,7 @@ Commands:
 [p]marrylimit
 [p]marriagetoggle
 [p]marrycount
-'''
+```
 
 Replace `[p]` with your bot's prefix.
 
