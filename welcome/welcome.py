@@ -6,6 +6,7 @@ from __main__ import send_cmd_help
 import os
 import asyncio
 
+#modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
 
 default_greeting = "Welcome {0.mention} to **{1.name}!**"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
@@ -69,9 +70,9 @@ class Welcome:
             {0.name} left {1.name}!
 
         Example formats:
-           1 {0.mention}.. What are you doing here? 🤔
-           2 ***{1.name}***  has a new member! ***{0.name}#{0.discriminator} - {0.id}***👍
-           3 Someone new joined! Who is it?! D: IS HE HERE TO HURT US?!
+           1 {0.mention}.. left just now? 🤔
+           2 ***{1.name}***  lost a member! ***{0.name}#{0.discriminator} - {0.id}***👍
+           3 Someone just left! Who was it?! D:?!
         """
         server = ctx.message.server
         self.settings[server.id]["LEAVE"] = format_msg
@@ -174,14 +175,14 @@ class Welcome:
             return
         channel = self.get_welcome_channel(server)
         if channel is None:
-            print('welcome.py: Channel not found. It was most likely deleted. User joined: {}'.format(member.name))
+            print('welcome.py: Channel not found. It was most likely deleted. User left: {}'.format(member.name))
             return
         if self.settings[server.id]["WHISPER"]:
             await self.bot.send_message(member, self.settings[server.id]["LEAVE"].format(member, server))
         if self.settings[server.id]["WHISPER"] != True and self.speak_permissions(server):
             await self.bot.send_message(channel, self.settings[server.id]["LEAVE"].format(member, server))
         else:
-            print("Permissions Error. User that joined: {0.name}".format(member))
+            print("Permissions Error. User that left: {0.name}".format(member))
             print("Bot doesn't have permissions to send messages to {0.name}'s #{1.name} channel".format(server,channel))
 
 
