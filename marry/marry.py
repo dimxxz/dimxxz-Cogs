@@ -135,13 +135,13 @@ class Marry:
             await self.bot.say("Marriages are disabled in this server.")
             return
         times_married = 0
-        if self.settings[ctx.message.server.id][ctx.message.author.id] is not 0:
-            times_married = times_married + self.settings[ctx.message.server.id][ctx.message.author.id]
-            if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
-                await self.bot.say("You have reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit']))
-                self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-                self.save_settings()
-                return
+        #if self.settings[ctx.message.server.id][ctx.message.author.id] is not 0:
+        #    times_married = times_married + self.settings[ctx.message.server.id][ctx.message.author.id]
+        #    if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
+        #        await self.bot.say("You have reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit']))
+        #        self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
+        #        self.save_settings()
+        #        return
         try:
             married_role = await self.bot.create_role(server=ctx.message.server, name="{} ❤ {}".format(ctx.message.author.name, thing), colour=discord.Colour(value=0XFF00EE))
         except discord.Forbidden:
