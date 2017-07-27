@@ -8,7 +8,7 @@ import asyncio
 
 #modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
 
-default_greeting = "Welcome {0.mention} to **{1.name}!**"
+default_greeting = "Welcome {0.mention} to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
 default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "CHANNEL": None, "WHISPER" : False}
 
@@ -28,7 +28,7 @@ class Welcome:
         if server.id not in self.settings:
             self.settings[server.id] = default_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
-            fileIO("data/welcome/settings.json","save",self.settings)
+            fileIO("data/welcome/settings.json", "save", self.settings)
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             msg = "```css\n"
@@ -56,7 +56,7 @@ class Welcome:
         """
         server = ctx.message.server
         self.settings[server.id]["GREETING"] = format_msg
-        fileIO("data/welcome/settings.json","save",self.settings)
+        fileIO("data/welcome/settings.json", "save", self.settings)
         await self.bot.say("**Done** I've Successfully set the welcome greeting to :\n`{}`".format(format_msg))
         await self.send_testing_msg(ctx)
 
@@ -110,7 +110,7 @@ class Welcome:
         await self.send_testing_msg(ctx)
 
     @welcomeset.command(pass_context=True)
-    async def whisper(self, ctx, choice : str=None): 
+    async def whisper(self, ctx, choice : str=None):
         """Sets whether or not a DM is sent to the new user
         
         Options:
@@ -133,18 +133,28 @@ class Welcome:
         if not self.settings[server.id]["WHISPER"]:
             await self.bot.say("**I will no longer send DMs to new users**")
         elif self.settings[server.id]["WHISPER"] == "BOTH":
-            await self.bot.send_message(channel,"**I will now send welcome messages to** ***{0.mention}*** **as well as to the new user in a DM**".format(channel))
+            await self.bot.send_message(channel, "**I will now send welcome messages to** ***{0.mention}*** **as well as to the new user in a DM**".format(channel))
         else:
-            await self.bot.send_message(channel,"I will keep sending welcome messages in **DM** :D.".format(channel))
+            await self.bot.send_message(channel, "I will keep sending welcome messages in **DM** :D.".format(channel))
         await self.send_testing_msg(ctx)
 
 
+    async def on_server_join(self, server):
+        greetingmsg = "Welcome {0.mention} to **{1.name}**!"
+        leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        if server.id not in self.settings:
+            self.settings[server.id] = def_settings
+            self.settings[server.id]["CHANNEL"] = server.default_channel.id
+            fileIO("data/welcome/settings.json", "save", self.settings)
+            return
+	
     async def member_join(self, member):
         server = member.server
         if server.id not in self.settings:
             self.settings[server.id] = default_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
-            fileIO("data/welcome/settings.json","save",self.settings)
+            fileIO("data/welcome/settings.json","save", self.settings)
         if not self.settings[server.id]["ON"]:
             return
         if server == None:
@@ -167,7 +177,7 @@ class Welcome:
         if server.id not in self.settings:
             self.settings[server.id] = default_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
-            fileIO("data/welcome/settings.json","save",self.settings)
+            fileIO("data/welcome/settings.json", "save", self.settings)
         if not self.settings[server.id]["ON"]:
             return
         if server == None:
@@ -211,7 +221,7 @@ class Welcome:
             if self.settings[server.id]["WHISPER"] != True:
                 await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
         else: 
-            await self.bot.send_message(ctx.message.channel,":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
+            await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
         
 
 def check_folders():
