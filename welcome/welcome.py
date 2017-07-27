@@ -6,7 +6,7 @@ from __main__ import send_cmd_help
 import os
 import asyncio
 
-#modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
+# modified and improved by dimxxz https://github.com/dimxxz/dimxxz-Cogs
 
 default_greeting = "Welcome {0.mention} to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
@@ -44,16 +44,16 @@ class Welcome:
     async def greeting(self, ctx, *, format_msg):
         """Sets the welcome message format for the server.
 
-        {0} is user
-        {1} is server
-        Default is set to: 
-            Welcome {0.name} to {1.name}!
+                {0} is user
+                {1} is server
+                Default is set to: 
+                    Welcome {0.name} to {1.name}!
 
-        Example formats:
-           1 {0.mention}.. What are you doing here? 🤔
-           2 ***{1.name}***  has a new member! ***{0.name}#{0.discriminator} - {0.id}***👍
-           3 Someone new joined! Who is it?! D: IS HE HERE TO HURT US?!
-        """
+                Example formats:
+                   1 {0.mention}.. What are you doing here? 
+                   2 ***{1.name}***  has a new member! ***{0.name}#{0.discriminator} - {0.id}***
+                   3 Someone new joined! Who is it?! D: IS HE HERE TO HURT US?! 
+                """
         server = ctx.message.server
         self.settings[server.id]["GREETING"] = format_msg
         fileIO("data/welcome/settings.json", "save", self.settings)
@@ -64,16 +64,15 @@ class Welcome:
     async def leaving(self, ctx, *, format_msg):
         """Sets the leaving message format for the server.
 
-        {0} is user
-        {1} is server
-        Default is set to: 
-            {0.name} left {1.name}!
+                {0} is user
+                {1} is server
+                Default is set to: 
+                    {0.name} left {1.name}!
 
-        Example formats:
-           1 {0.mention}.. left just now? 🤔
-           2 ***{1.name}***  lost a member! ***{0.name}#{0.discriminator} - {0.id}***👍
-           3 Someone just left! Who was it?! D:?!
-        """
+                Example formats:
+                   1 {0.mention}.. left just now? 
+                   2 ***{1.name}***  lost a member! ***{0.name}#{0.discriminator} - {0.id}***
+                   3 Someone just left! Who was it?! D:?!"""
         server = ctx.message.server
         self.settings[server.id]["LEAVE"] = format_msg
         fileIO("data/welcome/settings.json", "save", self.settings)
@@ -151,10 +150,15 @@ class Welcome:
 	
     async def member_join(self, member):
         server = member.server
+        greetingmsg = "Welcome {0.mention} to **{1.name}**!"
+        leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        memberjoin = self.settings[server.id]["GREETING"].format(member, server)
+        e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
         if server.id not in self.settings:
-            self.settings[server.id] = default_settings
+            self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
-            fileIO("data/welcome/settings.json","save", self.settings)
+            fileIO("data/welcome/settings.json", "save", self.settings)
         if not self.settings[server.id]["ON"]:
             return
         if server == None:
@@ -165,17 +169,22 @@ class Welcome:
             print('welcome.py: Channel not found. It was most likely deleted. User joined: {}'.format(member.name))
             return
         if self.settings[server.id]["WHISPER"]:
-            await self.bot.send_message(member, self.settings[server.id]["GREETING"].format(member, server))
+            await self.bot.send_message(member, embed=e)
         if self.settings[server.id]["WHISPER"] != True and self.speak_permissions(server):
-            await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(member, server))
+            await self.bot.send_message(channel, embed=e)
         else:
             print("Permissions Error. User that joined: {0.name}".format(member))
             print("Bot doesn't have permissions to send messages to {0.name}'s #{1.name} channel".format(server,channel))
 			
     async def member_remove(self, member):
         server = member.server
+        greetingmsg = "Welcome {0.mention} to **{1.name}**!"
+        leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        memberleave = self.settings[server.id]["LEAVE"].format(member, server)
+        e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
         if server.id not in self.settings:
-            self.settings[server.id] = default_settings
+            self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
             fileIO("data/welcome/settings.json", "save", self.settings)
         if not self.settings[server.id]["ON"]:
@@ -188,9 +197,9 @@ class Welcome:
             print('welcome.py: Channel not found. It was most likely deleted. User left: {}'.format(member.name))
             return
         if self.settings[server.id]["WHISPER"]:
-            await self.bot.send_message(member, self.settings[server.id]["LEAVE"].format(member, server))
+            await self.bot.send_message(channel, embed=e)
         if self.settings[server.id]["WHISPER"] != True and self.speak_permissions(server):
-            await self.bot.send_message(channel, self.settings[server.id]["LEAVE"].format(member, server))
+            await self.bot.send_message(channel, embed=e)
         else:
             print("Permissions Error. User that left: {0.name}".format(member))
             print("Bot doesn't have permissions to send messages to {0.name}'s #{1.name} channel".format(server,channel))
@@ -222,7 +231,9 @@ class Welcome:
                 await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
         else: 
             await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
-        
+
+    async def avatar_get(self, ctx, *, user: discord.Member=None):
+        avatar = user.avatar_url
 
 def check_folders():
     if not os.path.exists("data/welcome"):
