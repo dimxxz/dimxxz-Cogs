@@ -155,6 +155,7 @@ class Welcome:
         def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
         memberjoin = self.settings[server.id]["GREETING"].format(member, server)
         e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
+        e.set_thumbnail(url=member.avatar_url)
         if server.id not in self.settings:
             self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
@@ -183,6 +184,7 @@ class Welcome:
         def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
         memberleave = self.settings[server.id]["LEAVE"].format(member, server)
         e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
+        e.set_thumbnail(url=member.avatar_url)
         if server.id not in self.settings:
             self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
@@ -232,8 +234,8 @@ class Welcome:
         else: 
             await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
 
-    async def avatar_get(self, ctx, *, user: discord.Member=None):
-        avatar = user.avatar_url
+    #async def avatar_get(self, ctx, *, user: discord.Member=None):
+    #    avatar = user.avatar_url
 
 def check_folders():
     if not os.path.exists("data/welcome"):
