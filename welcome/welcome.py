@@ -10,7 +10,7 @@ import asyncio
 
 default_greeting = "Welcome {0.mention} to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "CHANNEL": None, "WHISPER" : False}
+default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER" : False}
 
 class Welcome:
     """Welcomes new members to the server in the default/set channel"""
@@ -32,11 +32,12 @@ class Welcome:
         if ctx.invoked_subcommand is None:
             await send_cmd_help(ctx)
             msg = "```css\n"
-            msg += "GREETING: {}\n".format(self.settings[server.id]["GREETING"])
-            msg += "LEAVE: {}\n".format(self.settings[server.id]["LEAVE"])
-            msg += "CHANNEL: #{}\n".format(self.get_welcome_channel(server)) 
-            msg += "ON: {}\n".format(self.settings[server.id]["ON"]) 
-            msg += "WHISPER: {}\n".format(self.settings[server.id]["WHISPER"])
+            msg += "Greeting: {}\n".format(self.settings[server.id]["GREETING"])
+            msg += "Leave: {}\n".format(self.settings[server.id]["LEAVE"])
+            msg += "Channel: #{}\n".format(self.get_welcome_channel(server))
+            msg += "Welcome ON: {}\n".format(self.settings[server.id]["ON"]) 
+            msg += "Leave ON: {}\n".format(self.settings[server.id]["ONL"]) 
+            msg += "Whisper: {}\n".format(self.settings[server.id]["WHISPER"])
             msg += "```"
             await self.bot.say(msg)
 
@@ -80,15 +81,27 @@ class Welcome:
         #await self.send_testing_msg(ctx)
 
     @welcomeset.command(pass_context=True)
-    async def toggle(self, ctx):
+    async def togglej(self, ctx):
         """Turns on/off welcoming new users to the server"""
         server = ctx.message.server
         self.settings[server.id]["ON"] = not self.settings[server.id]["ON"]
         if self.settings[server.id]["ON"]:
-            await self.bot.say("**I will now Welcome New users.**")
-            await self.send_testing_msg(ctx)
+            await self.bot.say("**I will now welcome New users.**")
+            await self.send_testing_msg_join(ctx)
         else:
             await self.bot.say("**I will no longer welcome new users.**")
+        fileIO("data/welcome/settings.json", "save", self.settings)
+		
+    @welcomeset.command(pass_context=True)
+    async def togglel(self, ctx):
+        """Turns on/off leaving message trigger"""
+        server = ctx.message.server
+        self.settings[server.id]["ONL"] = not self.settings[server.id]["ONL"]
+        if self.settings[server.id]["ONL"]:
+            await self.bot.say("**I will now send the Leaving message.**")
+            await self.send_testing_msg_leave(ctx)
+        else:
+            await self.bot.say("**I will no longer send the Leaving message.**")
         fileIO("data/welcome/settings.json", "save", self.settings)
 
     @welcomeset.command(pass_context=True)
@@ -141,7 +154,7 @@ class Welcome:
     async def on_server_join(self, server):
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
         if server.id not in self.settings:
             self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
@@ -152,7 +165,7 @@ class Welcome:
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
         memberjoin = self.settings[server.id]["GREETING"].format(member, server)
         e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
         e.set_thumbnail(url=member.avatar_url)
@@ -181,7 +194,7 @@ class Welcome:
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
         memberleave = self.settings[server.id]["LEAVE"].format(member, server)
         e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
         e.set_thumbnail(url=member.avatar_url)
@@ -189,7 +202,7 @@ class Welcome:
             self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
             fileIO("data/welcome/settings.json", "save", self.settings)
-        if not self.settings[server.id]["ON"]:
+        if not self.settings[server.id]["ONL"]:
             return
         if server == None:
             print("Server is None. Private Message or some new fangled Discord thing?.. Anyways there be an error, the user was {}".format(member.name))
@@ -199,7 +212,7 @@ class Welcome:
             print('welcome.py: Channel not found. It was most likely deleted. User left: {}'.format(member.name))
             return
         if self.settings[server.id]["WHISPER"]:
-            await self.bot.send_message(channel, embed=e)
+            await self.bot.send_message(member, embed=e)
         if self.settings[server.id]["WHISPER"] != True and self.speak_permissions(server):
             await self.bot.send_message(channel, embed=e)
         else:
@@ -219,23 +232,48 @@ class Welcome:
             return False
         return server.get_member(self.bot.user.id).permissions_in(channel).send_messages
 
-    async def send_testing_msg(self, ctx):
+    async def send_testing_msg_join(self, ctx):
         server = ctx.message.server
         channel = self.get_welcome_channel(server)
+        memberjoin = self.settings[server.id]["GREETING"].format(ctx.message.author, server)
+        e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
+        e.set_footer(text="This is a Test message!")
+        e.set_thumbnail(url=ctx.message.author.avatar_url)
         if channel is None:
             await self.bot.send_message(ctx.message.channel, ":bangbang::x:**I cannot find the specified Channel** :bangbang:")
             return
         await self.bot.send_message(ctx.message.channel, "**Sending A testing message to** ***{}***".format(channel))
         if self.speak_permissions(server):
             if self.settings[server.id]["WHISPER"]:
-                await self.bot.send_message(ctx.message.author, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
+                await self.bot.send_message(ctx.message.author, embed=e)
+                #await self.bot.send_message(ctx.message.author, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
             if self.settings[server.id]["WHISPER"] != True:
-                await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
+                await self.bot.send_message(channel, embed=e)
+                #await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
         else: 
             await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
 
-    #async def avatar_get(self, ctx, *, user: discord.Member=None):
-    #    avatar = user.avatar_url
+    async def send_testing_msg_leave(self, ctx):
+        server = ctx.message.server
+        channel = self.get_welcome_channel(server)
+        memberleave = self.settings[server.id]["LEAVE"].format(ctx.message.author, server)
+        e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
+        e.set_footer(text="This is a Test message!")
+        e.set_thumbnail(url=ctx.message.author.avatar_url)
+        if channel is None:
+            await self.bot.send_message(ctx.message.channel, ":bangbang::x:**I cannot find the specified Channel** :bangbang:")
+            return
+        await self.bot.send_message(ctx.message.channel, "**Sending A testing message to** ***{}***".format(channel))
+        if self.speak_permissions(server):
+            if self.settings[server.id]["WHISPER"]:
+                await self.bot.send_message(ctx.message.author, embed=e)
+                #await self.bot.send_message(ctx.message.author, self.settings[server.id]["LEAVE"].format(ctx.message.author,server))
+            if self.settings[server.id]["WHISPER"] != True:
+                await self.bot.send_message(channel, embed=e)
+                #await self.bot.send_message(channel, self.settings[server.id]["LEAVE"].format(ctx.message.author,server))
+        else: 
+            await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
+
 
 def check_folders():
     if not os.path.exists("data/welcome"):
