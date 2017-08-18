@@ -59,7 +59,7 @@ class Welcome:
         self.settings[server.id]["GREETING"] = format_msg
         fileIO("data/welcome/settings.json", "save", self.settings)
         await self.bot.say("**Done** I've Successfully set the welcome greeting to :\n`{}`".format(format_msg))
-        await self.send_testing_msg(ctx)
+        await self.send_testing_msg_join(ctx)
 
     @welcomeset.command(pass_context=True)
     async def leaving(self, ctx, *, format_msg):
@@ -78,7 +78,7 @@ class Welcome:
         self.settings[server.id]["LEAVE"] = format_msg
         fileIO("data/welcome/settings.json", "save", self.settings)
         await self.bot.say("**Done** I've Successfully set the leaving message to :\n`{}`".format(format_msg))
-        #await self.send_testing_msg(ctx)
+        await self.send_testing_msg_leave(ctx)
 
     @welcomeset.command(pass_context=True)
     async def togglej(self, ctx):
