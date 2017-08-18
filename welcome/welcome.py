@@ -6,7 +6,7 @@ from __main__ import send_cmd_help
 import os
 import asyncio
 
-# modified and improved by dimxxz https://github.com/dimxxz/dimxxz-Cogs
+#_ modified and improved by dimxxz https://github.com/dimxxz/dimxxz-Cogs
 
 default_greeting = "Welcome {0.mention} to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
