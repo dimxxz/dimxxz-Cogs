@@ -33,16 +33,26 @@ class invlinkblock:
             e = discord.Embed(title="Discord Invite Link Blocker",
                               description="Invite-link Block is **OFF** now."
                                           "", colour=discord.Colour.green())
-            await self.bot.send_message(channel, embed = e)
-            return
+            msg = "Invite-link Block is **OFF** now."
+            try:
+                await self.bot.send_message(channel, embed = e)
+                return
+            except:
+                await self.bot.send_message(channel, msg)
+                return
         elif self.settings[server.id]['ON'] == 0:
             self.settings[server.id]['ON'] = self.settings[server.id]['ON'] + 1
             self.save_settings()
             e = discord.Embed(title="Discord Invite Link Blocker",
                               description="Invite-link Block is **ON** now."
                                           "", colour=discord.Colour.green())
-            await self.bot.send_message(channel, embed = e)
-            return
+            msg = "Invite-link Block is **ON** now."
+            try:
+                await self.bot.send_message(channel, embed = e)
+                return
+            except:
+                await self.bot.send_message(channel, msg)
+                return
 		
     async def listener(self, message):
         channel = message.channel
@@ -50,6 +60,7 @@ class invlinkblock:
         e = discord.Embed(title="Discord Invite Link Blocker",
                           description="**STOP** posting invite links!!!!"
                                       "", colour=discord.Colour.red())
+        msg = "**STOP** posting invite links!!!!"
         if server.id not in self.settings:
             self.settings[server.id] = {'ON': 0}
             self.save_settings()
@@ -64,14 +75,18 @@ class invlinkblock:
                             await self.bot.send_message(channel, embed = e)
                             await self.bot.delete_message(message)
                         except discord.Forbidden:
-                            pass
+                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                            await self.bot.send_message(channel, msg)
+                            await self.bot.delete_message(message)
                     elif 'https://discord.me' in message.content.lower() or 'http://discord' in message.content.lower():
                         try:
                             await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
                             await self.bot.send_message(channel, embed = e)
                             await self.bot.delete_message(message)
                         except discord.Forbidden:
-                            pass
+                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                            await self.bot.send_message(channel, msg)
+                            await self.bot.delete_message(message)
         elif self.settings[server.id]['ON'] == 0:
             pass
 			
