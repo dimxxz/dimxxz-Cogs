@@ -4,6 +4,7 @@ from discord.ext import commands
 from cogs.utils.dataIO import dataIO
 import asyncio
 
+# edited and improved by Choooo (no github) and dimxxz (https://github.com/dimxxz/dimxxz-Cogs)
 
 class Away:
     """Le away cog"""
