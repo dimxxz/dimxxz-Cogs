@@ -4,7 +4,6 @@ from discord.ext import commands
 from cogs.utils.dataIO import dataIO
 import asyncio
 
-# edited and improved by Choooo (no github) and dimxxz (https://github.com/dimxxz/dimxxz-Cogs)
 
 class Away:
     """Le away cog"""
@@ -65,12 +64,18 @@ class Away:
         dataIO.save_json('data/away/away.json', self.data)
         await self.bot.say(embed = em)
         await asyncio.sleep(2)
-        await self.bot.delete_message(context.message)
-        async for x in self.bot.logs_from(context.message.channel):
-            if x.author.id == self.bot.user.id:
-                await asyncio.sleep(2)
-                await self.bot.delete_message(x)
-                return
+        try:
+            await self.bot.delete_message(context.message)
+        except:
+            pass
+        try:
+            async for x in self.bot.logs_from(context.message.channel):
+                if x.author.id == self.bot.user.id:
+                    await asyncio.sleep(2)
+                    await self.bot.delete_message(x)
+                    return
+        except:
+            pass
 
 
 def check_folder():
