@@ -8,8 +8,7 @@ Commands:
 [p]marry [user]
 [p]marryit [thing]			*for people that want to marry non-users
 [p]forcemarry [user1] [user2]
-[p]divorce [ID] [user]
-[p]forcedivorce [ID]			*if the normal divorce fails or a user leaves the server
+[p]divorce [ID]
 [p]massdivorce
 [p]setmarrylimit			*default is set to 1
 [p]marrylimit
