@@ -45,18 +45,6 @@ class Marry:
                     e = discord.Embed(description=msg, colour=discord.Colour.red())
                     await self.bot.say(embed=e)
                     return
-            elif yourlovedone.id == ("333054706052235265"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Mirai Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif yourlovedone.id == ("302563841085276160"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
             for role in ctx.message.author.roles:
                 if ctx.message.author.name in role.name:
                     if " ❤ " in role.name:
@@ -78,33 +66,16 @@ class Marry:
                             msg = "You're already married with this person."
                             e = discord.Embed(description=msg, colour=discord.Colour.red())
                             await self.bot.say(embed=e)
-                            #times_married = times_married + 1
-                            #self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-                            #self.save_settings()
                             return
-                    #elif not "❤" in role.name:
-                    #    times_married = 0
-                    #    self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-                    #    self.save_settings()
-                    #    msg = "not married"
-                    #    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #    await self.bot.say(embed=e)
             for rolec in ctx.message.author.roles:
                 if "❤" in rolec.name:
-                    #times_married = 0
                     times_married = times_married + 1
                     self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
                     self.save_settings()
-                    #msg = "You're already married!"
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
                 elif not "❤" in rolec.name:
                     times_married = 0
                     self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
                     self.save_settings()
-                    #msg = "You're not married yet!"
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
             times_married = times_married + self.settings[ctx.message.server.id][ctx.message.author.id]
             if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
                 msg = "You have reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
@@ -113,27 +84,18 @@ class Marry:
                 self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
                 self.save_settings()
                 return
-            #times_married = 0
 			
         elif self.settings[ctx.message.server.id][yourlovedone.id] is not 0:
             times_married = 0
-            #times_married = times_married + self.settings[ctx.message.server.id][yourlovedone.id]
             for role in yourlovedone.roles:
                 if "❤" in role.name:
-                    #times_married = 0
                     times_married = times_married + 1
                     self.settings[ctx.message.server.id][yourlovedone.id] = times_married
                     self.save_settings()
-                    #msg = "Your loved one is already married!"
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
                 elif not "❤" in role.name:
                     times_married = 0
                     self.settings[ctx.message.server.id][yourlovedone.id] = times_married
                     self.save_settings()
-                    #msg = "Your loved one is not married yet!"
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
             if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
                 msg = "Your loved one has reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
                 e = discord.Embed(description=msg, colour=discord.Colour.red())
@@ -232,18 +194,6 @@ class Marry:
                     e = discord.Embed(description=msg, colour=discord.Colour.red())
                     await self.bot.say(embed=e)
                     return
-            elif thing == ("<@302563841085276160>"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif thing == ("<@333054706052235265>"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Mirai Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
         else:
             msg = "Marriages are disabled in this server."
             e = discord.Embed(description=msg, colour=discord.Colour.red())
@@ -252,32 +202,14 @@ class Marry:
         times_married = 0
         for rolec in ctx.message.author.roles:
             if "♡" in rolec.name:
-                #times_married = 0
                 times_married = times_married + 1
-                #self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-                #self.save_settings()
-                #msg = "You're already married!"
-                #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                #await self.bot.say(embed=e)
             elif not "♡" in rolec.name:
                 times_married = 0
-                #self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-                #self.save_settings()
-                #msg = "You're not married yet!"
-                #e = discord.Embed(description=msg, colour=discord.Colour.green())
-                #await self.bot.say(embed=e)
         if times_married >= 2:
             msg = "You have reached the marry limit (2)."
             e = discord.Embed(description=msg, colour=discord.Colour.red())
             await self.bot.say(embed=e)
             return
-        #if self.settings[ctx.message.server.id][ctx.message.author.id] is not 0:
-        #    times_married = times_married + self.settings[ctx.message.server.id][ctx.message.author.id]
-        #    if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
-        #        await self.bot.say("You have reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit']))
-        #        self.settings[ctx.message.server.id][ctx.message.author.id] = times_married
-        #        self.save_settings()
-        #        return
         try:
             married_role = await self.bot.create_role(server=ctx.message.server, name="{} ♡ {}".format(ctx.message.author.name, thing), colour=discord.Colour(value=0XC05BF6)) #FF00EE))
         except discord.Forbidden:
@@ -350,37 +282,13 @@ class Marry:
                             return
             if lovedone.id == ctx.message.server.me.id:
                 if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
+                    msg = "I'd only marry her owner."
                     e = discord.Embed(description=msg, colour=discord.Colour.red())
                     await self.bot.say(embed=e)
                     return
             elif person.id == ctx.message.server.me.id:
                 if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif lovedone.id == ("333054706052235265"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Mirai Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif person.id == ("333054706052235265"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Mirai Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif lovedone.id == ("302563841085276160"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
-                    e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    await self.bot.say(embed=e)
-                    return
-            elif person.id == ("302563841085276160"):
-                if ctx.message.author.id != settings.owner:
-                    msg = "Goddess Miku will only marry her owner."
+                    msg = "I'd only marry her owner."
                     e = discord.Embed(description=msg, colour=discord.Colour.red())
                     await self.bot.say(embed=e)
                     return
@@ -390,24 +298,17 @@ class Marry:
             await self.bot.say(embed=e)
             return
         times_married = 0
-        if self.settings[ctx.message.server.id][person.id] is not 0:
-            #times_married = 0
+        if self.settings[ctx.message.server.id][person.id] is not 0:           
             for rolec in person.roles:
                 if "❤" in rolec.name:
                     times_married = self.settings[ctx.message.server.id][ctx.message.author.id]
                     times_married = times_married + 1
                     self.settings[ctx.message.server.id][person.id] = times_married
                     self.save_settings()
-                    #msg = "{} is already married!".format(person.name)
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
                 elif not "❤" in rolec.name:
                     times_married = 0
                     self.settings[ctx.message.server.id][person.id] = times_married
                     self.save_settings()
-                    #msg = "{} is not married yet!".format(person.name)
-                    #e = discord.Embed(description=msg, colour=discord.Colour.green())
-                    #await self.bot.say(embed=e)
             times_married = 0 + self.settings[ctx.message.server.id][person.id]
             if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
                 msg = "This person has reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
@@ -416,25 +317,17 @@ class Marry:
                 self.settings[ctx.message.server.id][person.id] = times_married
                 self.save_settings()
                 return
-            #times_married = 0
         if self.settings[ctx.message.server.id][lovedone.id] is not 0:
-            #times_married = 0
             for rolev in lovedone.roles:
                 if "❤" in rolev.name:
                     times_married = self.settings[ctx.message.server.id][lovedone.id]
                     times_married = times_married + 1
                     self.settings[ctx.message.server.id][lovedone.id] = times_married
                     self.save_settings()
-                    #msg = "{} is already married!".format(lovedone.name)
-                    #e = discord.Embed(description=msg, colour=discord.Colour.red())
-                    #await self.bot.say(embed=e)
                 elif not "❤" in rolev.name:
                     times_married = 0
                     self.settings[ctx.message.server.id][lovedone.id] = times_married
                     self.save_settings()
-                    #msg = "{} is not married yet!".format(lovedone.name)
-                    #e = discord.Embed(description=msg, colour=discord.Colour.green())
-                    #await self.bot.say(embed=e)
             times_married = 0 + self.settings[ctx.message.server.id][lovedone.id]
             if times_married >= self.settings[ctx.message.server.id]['marry_limit']:
                 msg = "The loved one has reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
@@ -503,21 +396,6 @@ class Marry:
         """Divorce your ex."""
         try:
             married_role = discord.utils.get(ctx.message.server.roles, id=divorce_id)
-            #if not "❤" in married_role.name.split():
-            #    msg = "That's not a valid ID."
-            #    e = discord.Embed(description=msg, colour=discord.Colour.red())
-            #    await self.bot.say(embed=e)
-            #    return
-            #elif not ctx.message.author.name in married_role.name.split():
-            #    msg = "That's not a valid ID."
-            #    e = discord.Embed(description=msg, colour=discord.Colour.red())
-            #    await self.bot.say(embed=e)
-            #elif not "♡" in married_role.name.split():
-            #    msg = "That's not a valid ID."
-            #    e = discord.Embed(description=msg, colour=discord.Colour.red())
-            #    await self.bot.say(embed=e)
-            #else:
-            #    pass
             await self.bot.delete_role(ctx.message.server, married_role)
             marchan = discord.utils.find(lambda c: c.name == 'marriage', ctx.message.server.channels)
             if marchan:
