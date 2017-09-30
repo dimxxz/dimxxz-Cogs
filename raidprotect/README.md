@@ -1,6 +1,7 @@
 Raidprotect v2.0
 
 Original cog written by PlanetTeamSpeakk/PTSCogs https://github.com/PlanetTeamSpeakk/PTSCogs
+
 Parts forked from xorole.py written by Caleb Johnson <me@calebj.io> (calebj#7377)
 
 Rewritten, modified and improved by me, dimxxz
