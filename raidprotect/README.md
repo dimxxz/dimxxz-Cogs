@@ -9,7 +9,7 @@ Rewritten, modified and improved by me, dimxxz
 Commands:
 
 ```
-[p]raidprotect					- Group command
+[p]raidprotect				- Group command
 [p]raidprotect members			- Shows how many users should join within 15 seconds before the bot should turn on raid protect.
 [p]raidprotect setmembers		- Sets after how many members join in 15 seconds the bot will protect the server. 
 [p]raidprotect toggle			- Toggle raid-protect v2.0. Now auto-creates role and channel on raids!
