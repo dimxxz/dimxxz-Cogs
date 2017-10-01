@@ -133,7 +133,7 @@ class RaidProtect:
             self.save_settings()
             
     @raidprotect.command(pass_context=True)
-    @checks.admin_or_permissions()
+    @checks.admin_or_permissions(manage_server=True)
     async def setup(self, ctx):
         """Setup the channel and role for raid-protect v2.0"""
         server = ctx.message.server
@@ -181,7 +181,7 @@ class RaidProtect:
 
             
     @raidprotect.command(pass_context=True)
-    @checks.admin_or_permissions()
+    @checks.admin_or_permissions(manage_server=True)
     async def toggle(self, ctx):
         """Toggle raid-protect v2.0. Now auto-creates role and channel on raids!"""
         if self.settings[ctx.message.server.id]['protected']:
@@ -193,7 +193,7 @@ class RaidProtect:
         self.save_settings()
         
     @raidprotect.command(pass_context=True)
-    @checks.admin_or_permissions()
+    @checks.admin_or_permissions(manage_server=True)
     async def setmembers(self, ctx, members:int):
         """Sets after how many members join in 15 seconds the bot will protect the server.
         0 is unlimited, so that will turn it off. Default is 4."""
