@@ -1,16 +1,20 @@
 import discord
+import datetime
+import re
+import time
 from discord.ext import commands
-from .utils.dataIO import fileIO
+from .utils.dataIO import dataIO, fileIO
 from .utils import checks
 from __main__ import send_cmd_help
 import os
 import asyncio
 
 #_ modified and improved by dimxxz https://github.com/dimxxz/dimxxz-Cogs
+#_ Warning Part forked from aikaterna's imagwelcome cog
 
-default_greeting = "Welcome {0.mention} to **{1.name}**!"
+default_greeting = "Welcome **{0.name}** to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER" : False}
+default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER" : False, "ACCOUNT_WARNINGS": True}
 
 class Welcome:
     """Welcomes new members to the server in the default/set channel"""
@@ -165,7 +169,7 @@ class Welcome:
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": True}
         memberjoin = self.settings[server.id]["GREETING"].format(member, server)
         e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
         e.set_thumbnail(url=member.avatar_url)
@@ -189,12 +193,20 @@ class Welcome:
         else:
             print("Permissions Error. User that joined: {0.name}".format(member))
             print("Bot doesn't have permissions to send messages to {0.name}'s #{1.name} channel".format(server,channel))
+        date_join = datetime.datetime.strptime(str(member.created_at), "%Y-%m-%d %H:%M:%S.%f")
+        date_now = datetime.datetime.now(datetime.timezone.utc)
+        date_now = date_now.replace(tzinfo=None)
+        since_join = date_now - date_join
+        msgx = "\N{WARNING SIGN} This account was created less than a week ago (" + str(since_join.days) + " days ago)"
+        e2 = discord.Embed(description=msgx, colour=discord.Colour.red())
+        if since_join.days < 7 and self.settings[server.id]["ACCOUNT_WARNINGS"]:
+            await self.bot.send_message(channel, embed=e2)
 			
     async def member_remove(self, member):
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": True}
         memberleave = self.settings[server.id]["LEAVE"].format(member, server)
         e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
         e.set_thumbnail(url=member.avatar_url)
