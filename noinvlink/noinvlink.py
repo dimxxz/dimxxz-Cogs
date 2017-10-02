@@ -33,26 +33,16 @@ class invlinkblock:
             e = discord.Embed(title="Discord Invite Link Blocker",
                               description="Invite-link Block is **OFF** now."
                                           "", colour=discord.Colour.green())
-            msg = "Invite-link Block is **OFF** now."
-            try:
-                await self.bot.send_message(channel, embed = e)
-                return
-            except:
-                await self.bot.send_message(channel, msg)
-                return
+            await self.bot.send_message(channel, embed = e)
+            return
         elif self.settings[server.id]['ON'] == 0:
             self.settings[server.id]['ON'] = self.settings[server.id]['ON'] + 1
             self.save_settings()
             e = discord.Embed(title="Discord Invite Link Blocker",
                               description="Invite-link Block is **ON** now."
                                           "", colour=discord.Colour.green())
-            msg = "Invite-link Block is **ON** now."
-            try:
-                await self.bot.send_message(channel, embed = e)
-                return
-            except:
-                await self.bot.send_message(channel, msg)
-                return
+            await self.bot.send_message(channel, embed = e)
+            return
 		
     async def listener(self, message):
         channel = message.channel
@@ -61,12 +51,12 @@ class invlinkblock:
                           description="**STOP** posting invite links!!!!"
                                       "", colour=discord.Colour.red())
         msg = "**STOP** posting invite links!!!!"
-        if server.id not in self.settings:
-            self.settings[server.id] = {'ON': 0}
-            self.save_settings()
-        else:
-            pass
-        if self.settings[server.id]['ON'] == 1:
+        #if server.id not in self.settings:
+        #    self.settings[server.id] = {'ON': 0}
+        #    self.save_settings()
+        #else:
+        #    pass
+        if self.settings[message.server.id]['ON'] == 1:
             if message.author.id != self.bot.user.id:
                 if message.author.id != server.owner.id:
                     if 'http://discord.gg/' in message.content.lower() or 'https://discord' in message.content.lower():
