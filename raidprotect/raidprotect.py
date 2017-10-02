@@ -141,8 +141,11 @@ class RaidProtect:
         try:
             role = self.find_role(server, chrolename)
             if role.name == chrolename:
-                await self.bot.say("Raidprotection is already set up. If you removed the channel and want to set"
-                                   " Raidprotection up again, please remove the role **raid** in server settings first!")
+                e = discord.Embed(title="Anti-Raid", description="Raid-protection is already set up. If you removed the"
+                                                                 " channel and want to set Raid-protection up again, "
+                                                                 "please remove the role **raid** in the Server Settings first!",
+                                  colour=discord.Colour.red())
+                await self.bot.say(embed=e)
                 return
         except:
             covrole = await self.bot.create_role(server, name=chrolename)
@@ -167,8 +170,9 @@ class RaidProtect:
                                         await self.bot.edit_channel_permissions(c, covrole, everyone_perms)
                                     except discord.errors.Forbidden:
                                         pass
-
-            await self.bot.say("Role and Channel for Raid-protection has been set up!")
+            e = discord.Embed(title="Anti-Raid", description="Raid-protection has been set up!",
+                              colour=discord.Colour.red())
+            await self.bot.send_message(chn, embed=e)
 
             await asyncio.sleep(1)
             for c in server.channels:
@@ -177,7 +181,9 @@ class RaidProtect:
                         await self.bot.edit_channel_permissions(c, covrole, everyone_perms)
                     except discord.errors.Forbidden:
                         pass
-            await self.bot.say("Modified all Channels for Raid-protection!")
+            e2 = discord.Embed(description="Raid-protection is now active! Contact a Staff Member for"
+                                           " help or wait till you get verified!", colour=discord.Colour.red())
+            await self.bot.send_message(chn, embed=e2)
 
             
     @raidprotect.command(pass_context=True)
@@ -223,9 +229,9 @@ class RaidProtect:
                     if (self.settings[member.server.id]['joined'] >= self.settings[member.server.id]['members']) and not (self.settings[member.server.id]['protected']):
                         self.settings[member.server.id]['protected'] = True
                         self.save_settings()
-                        for channel in member.server.channels:
-                            if (channel.id == self.settings[member.server.id]['channel']) and (self.settings[member.server.id]['channel'] != None):
-                                await self.bot.send_message(channel, "Raid protect has been turned on, more than {} people joined within 15 seconds.".format(self.settings[member.server.id]['members']))
+                        #for channel in member.server.channels:
+                        #    if (channel.id == self.settings[member.server.id]['channel']) and (self.settings[member.server.id]['channel'] != None):
+                        #        await self.bot.send_message(channel, "Raid protect has been turned on, more than {} people joined within 15 seconds.".format(self.settings[member.server.id]['members']))
                 await asyncio.sleep(15)
                 self.settings[member.server.id]['joined'] = 0
                 self.save_settings()
@@ -262,8 +268,9 @@ class RaidProtect:
                                                     await self.bot.edit_channel_permissions(c, covrole, everyone_perms)
                                                 except discord.errors.Forbidden:
                                                     pass
-
-                        await self.bot.send_message(chn, "Raid-protection has been set up!")
+                        e = discord.Embed(title="Anti-Raid", description="Raid-protection has been set up!",
+                                          colour=discord.Colour.red())
+                        await self.bot.send_message(chn, embed=e)
                         await asyncio.sleep(1)
                         for c in member.server.channels:
                             if c.name != chn.name:
@@ -271,8 +278,9 @@ class RaidProtect:
                                     await self.bot.edit_channel_permissions(c, covrole, everyone_perms)
                                 except discord.errors.Forbidden:
                                     pass
-                        await self.bot.send_message(chn, "Raid-protection is now active! Contact a Staff Member for"
-                                                         " help or wait till you get verified!")
+                        e2 = discord.Embed(description="Raid-protection is now active! Contact a Staff Member for"
+                                                      " help or wait till you get verified!", colour=discord.Colour.red())
+                        await self.bot.send_message(chn, embed=e2)
                         await self._auto_give(member)
             except KeyError:
                 return
