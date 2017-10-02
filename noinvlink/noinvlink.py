@@ -47,19 +47,20 @@ class invlinkblock:
     async def listener(self, message):
         channel = message.channel
         server = message.server
-        e = discord.Embed(title="Discord Invite Link Blocker",
-                          description="**STOP** posting invite links!!!!"
-                                      "", colour=discord.Colour.red())
-        msg = "**STOP** posting invite links!!!!"
         #if server.id not in self.settings:
         #    self.settings[server.id] = {'ON': 0}
         #    self.save_settings()
         #else:
         #    pass
-        if self.settings[message.server.id]['ON'] == 1:
-            if message.author.id != self.bot.user.id:
-                if message.author.id != server.owner.id:
+        #if self.settings[message.server.id]['ON'] == 1:
+        if message.author.id != self.bot.user.id:
+            if message.author.id != server.owner.id:
+                if self.settings[message.server.id]['ON'] == 1:
                     if 'http://discord.gg/' in message.content.lower() or 'https://discord' in message.content.lower():
+                        e = discord.Embed(title="Discord Invite Link Blocker",
+                                          description="**STOP** posting invite links!!!!"
+                                                      "", colour=discord.Colour.red())
+                        msg = "**STOP** posting invite links!!!!"
                         try:
                             await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
                             await self.bot.send_message(channel, embed = e)
@@ -69,6 +70,10 @@ class invlinkblock:
                             await self.bot.send_message(channel, msg)
                             await self.bot.delete_message(message)
                     elif 'https://discord.me' in message.content.lower() or 'http://discord' in message.content.lower():
+                        e = discord.Embed(title="Discord Invite Link Blocker",
+                                          description="**STOP** posting invite links!!!!"
+                                                      "", colour=discord.Colour.red())
+                        msg = "**STOP** posting invite links!!!!"
                         try:
                             await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
                             await self.bot.send_message(channel, embed = e)
@@ -77,8 +82,8 @@ class invlinkblock:
                             await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
                             await self.bot.send_message(channel, msg)
                             await self.bot.delete_message(message)
-        elif self.settings[server.id]['ON'] == 0:
-            pass
+                elif self.settings[server.id]['ON'] == 0:
+                    pass
 			
     async def on_server_join(self, server):
         if server.id not in self.settings:
