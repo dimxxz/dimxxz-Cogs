@@ -10,7 +10,6 @@ import os
 import asyncio
 
 #_ modified and improved by dimxxz https://github.com/dimxxz/dimxxz-Cogs
-#_ Warning Part forked from aikaterna's imagwelcome cog
 
 default_greeting = "Welcome **{0.name}** to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
@@ -123,7 +122,7 @@ class Welcome:
         fileIO("data/welcome/settings.json", "save", self.settings)
         channel = self.get_welcome_channel(server)
         await self.bot.send_message(channel,"**I will now send welcome messages to** ***{0.mention}**".format(channel))
-        await self.send_testing_msg(ctx)
+        await self.send_testing_msg_join(ctx)
 
     @welcomeset.command(pass_context=True)
     async def whisper(self, ctx, choice : str=None):
