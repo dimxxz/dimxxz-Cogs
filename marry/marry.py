@@ -21,7 +21,7 @@ class Marry:
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.command(pass_context=True, no_pm=True)
     async def marry(self, ctx, yourlovedone:discord.Member):
-        """Now you can finally marry your loved one."""
+        """Marry your loved one."""
         if ctx.message.server.id not in self.settings:
             self.settings[ctx.message.server.id] = {'marry_limit': 1, 'disabled': False}
             self.save_settings()
@@ -56,7 +56,6 @@ class Marry:
                     else:
                         pass
                 times_married1 = times_married1 + 1
-                await self.bot.say("1 role")
         if times_married1 >= self.settings[ctx.message.server.id]['marry_limit']:
             msg = "You have reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
             e = discord.Embed(description=msg, colour=discord.Colour.red())
@@ -66,7 +65,6 @@ class Marry:
         for role2 in yourlovedone.roles:
             if "❤" in role2.name:
                 times_married2 = times_married2 + 1
-                await self.bot.say("1s role")
         if times_married2 >= self.settings[ctx.message.server.id]['marry_limit']:
             msg = "Your loved one has reached the marry limit ({}).".format(self.settings[ctx.message.server.id]['marry_limit'])
             e = discord.Embed(description=msg, colour=discord.Colour.red())
@@ -139,7 +137,7 @@ class Marry:
     @commands.cooldown(1, 60, commands.BucketType.user)
     @commands.command(pass_context=True, no_pm=True)
     async def marryit(self, ctx, thing):
-        """Now you can finally marry your loved things or non-user characters"""
+        """Marry your loved things or non-user characters"""
         if ctx.message.server.id not in self.settings:
             self.settings[ctx.message.server.id] = {'marry_limit': 1, 'disabled': False}
             self.save_settings()
@@ -215,7 +213,7 @@ class Marry:
     @commands.command(pass_context=True, no_pm=True)
     @checks.admin_or_permissions(manage_roles=True)
     async def forcemarry(self, ctx, person:discord.Member, lovedone:discord.Member):
-        """Now you can finally force marry 2 users."""
+        """Force marry 2 users."""
         if (ctx.message.server.id not in self.settings) or ("marry_limit" not in self.settings[ctx.message.server.id]):
             self.settings[ctx.message.server.id] = {'marry_limit': 0, 'disabled': False}
             self.save_settings()
