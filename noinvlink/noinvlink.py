@@ -48,37 +48,35 @@ class invlinkblock:
         channel = message.channel
         server = message.server
         if message.author.id != self.bot.user.id:
-            if message.author.id != server.owner.id:
-                if 'http://discord.gg/' in message.content.lower() or 'https://discord' in message.content.lower():
+            if message.author.id != settings.owner:
+                if message.author.id != server.owner.id:
                     if self.settings[message.server.id]['ON'] == 1:
-                        e = discord.Embed(title="Discord Invite Link Blocker",
-                                          description="**STOP** posting invite links!!!!"
-                                                      "", colour=discord.Colour.red())
-                        msg = "**STOP** posting invite links!!!!"
-                        try:
-                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
-                            await self.bot.send_message(channel, embed = e)
-                            await self.bot.delete_message(message)
-                        except discord.Forbidden:
-                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
-                            await self.bot.send_message(channel, msg)
-                            await self.bot.delete_message(message)
-                    elif self.settings[server.id]['ON'] == 0:
-                        pass
-                elif 'https://discord.me' in message.content.lower() or 'http://discord' in message.content.lower():
-                    if self.settings[message.server.id]['ON'] == 1:
-                        e = discord.Embed(title="Discord Invite Link Blocker",
-                                          description="**STOP** posting invite links!!!!"
-                                                      "", colour=discord.Colour.red())
-                        msg = "**STOP** posting invite links!!!!"
-                        try:
-                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
-                            await self.bot.send_message(channel, embed = e)
-                            await self.bot.delete_message(message)
-                        except discord.Forbidden:
-                            await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
-                            await self.bot.send_message(channel, msg)
-                            await self.bot.delete_message(message)
+                        if 'http://discord.gg/' in message.content.lower() or 'https://discord' in message.content.lower():
+                            e = discord.Embed(title="Discord Invite Link Blocker",
+                                              description="**STOP** posting invite links!!!!"
+                                                          "", colour=discord.Colour.red())
+                            msg = "**STOP** posting invite links!!!!"
+                            try:
+                                await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                                await self.bot.send_message(channel, embed = e)
+                                await self.bot.delete_message(message)
+                            except discord.Forbidden:
+                                await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                                await self.bot.send_message(channel, msg)
+                                await self.bot.delete_message(message)
+                        elif 'https://discord.me' in message.content.lower() or 'http://discord' in message.content.lower():
+                            e = discord.Embed(title="Discord Invite Link Blocker",
+                                              description="**STOP** posting invite links!!!!"
+                                                          "", colour=discord.Colour.red())
+                            msg = "**STOP** posting invite links!!!!"
+                            try:
+                                await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                                await self.bot.send_message(channel, embed = e)
+                                await self.bot.delete_message(message)
+                            except discord.Forbidden:
+                                await self.bot.send_message(channel, message.author.mention + " :no_entry: ")
+                                await self.bot.send_message(channel, msg)
+                                await self.bot.delete_message(message)
                     elif self.settings[server.id]['ON'] == 0:
                         pass
 			
