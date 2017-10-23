@@ -125,7 +125,7 @@ class Welcome:
         await self.send_testing_msg_join(ctx)
 
     @welcomeset.command(pass_context=True)
-    async def whisper(self, ctx, choice : str=None):
+    async def whisper(self, ctx, choice : str):
         """Sets whether or not a DM is sent to the new user
         
         Options:
@@ -151,7 +151,7 @@ class Welcome:
             await self.bot.send_message(channel, "**I will now send welcome messages to** ***{0.mention}*** **as well as to the new user in a DM**".format(channel))
         else:
             await self.bot.send_message(channel, "I will keep sending welcome messages in **DM** :D.".format(channel))
-        await self.send_testing_msg(ctx)
+        await self.send_testing_msg_join(ctx)
 
 
     async def on_server_join(self, server):
@@ -257,10 +257,8 @@ class Welcome:
         if self.speak_permissions(server):
             if self.settings[server.id]["WHISPER"]:
                 await self.bot.send_message(ctx.message.author, embed=e)
-                #await self.bot.send_message(ctx.message.author, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
             if self.settings[server.id]["WHISPER"] != True:
                 await self.bot.send_message(channel, embed=e)
-                #await self.bot.send_message(channel, self.settings[server.id]["GREETING"].format(ctx.message.author,server))
         else: 
             await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
 
@@ -278,10 +276,8 @@ class Welcome:
         if self.speak_permissions(server):
             if self.settings[server.id]["WHISPER"]:
                 await self.bot.send_message(ctx.message.author, embed=e)
-                #await self.bot.send_message(ctx.message.author, self.settings[server.id]["LEAVE"].format(ctx.message.author,server))
             if self.settings[server.id]["WHISPER"] != True:
                 await self.bot.send_message(channel, embed=e)
-                #await self.bot.send_message(channel, self.settings[server.id]["LEAVE"].format(ctx.message.author,server))
         else: 
             await self.bot.send_message(ctx.message.channel, ":bangbang::no_good:**I am not capable of sending messages to** ***{0.mention}***:x:".format(channel))
 
