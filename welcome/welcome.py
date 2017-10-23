@@ -13,7 +13,7 @@ import asyncio
 
 default_greeting = "Welcome **{0.name}** to **{1.name}**!"
 default_leave = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER" : False, "ACCOUNT_WARNINGS": True}
+default_settings = {"GREETING": default_greeting, "LEAVE": default_leave, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER" : False, "ACCOUNT_WARNINGS": False}
 
 class Welcome:
     """Welcomes new members to the server in the default/set channel"""
@@ -41,6 +41,7 @@ class Welcome:
             msg += "Welcome ON: {}\n".format(self.settings[server.id]["ON"]) 
             msg += "Leave ON: {}\n".format(self.settings[server.id]["ONL"]) 
             msg += "Whisper: {}\n".format(self.settings[server.id]["WHISPER"])
+            msg += "Warnings: {}\n".format(self.settings[server.id]["ACCOUNT_WARNINGS"])
             msg += "```"
             await self.bot.say(msg)
 
@@ -83,6 +84,17 @@ class Welcome:
         await self.bot.say("**Done** I've Successfully set the leaving message to :\n`{}`".format(format_msg))
         await self.send_testing_msg_leave(ctx)
 
+    @welcomeset.command(pass_context=True)
+    async def warnings(self, ctx):
+        """Turns on/off warnings when a newly created account joins."""
+        server = ctx.message.server
+        self.settings[server.id]["ACCOUNT_WARNINGS"] = not self.settings[server.id]["ACCOUNT_WARNINGS"]
+        if self.settings[server.id]["ACCOUNT_WARNINGS"]:
+            await self.bot.say("**Warnings for newly created accounts is activated!**")
+        else:
+            await self.bot.say("**Warnings for newly created accounts are deactivated!**")            
+        fileIO("data/welcome/settings.json", "save", self.settings)	
+		
     @welcomeset.command(pass_context=True)
     async def togglej(self, ctx):
         """Turns on/off welcoming new users to the server"""
@@ -157,7 +169,7 @@ class Welcome:
     async def on_server_join(self, server):
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": False}
         if server.id not in self.settings:
             self.settings[server.id] = def_settings
             self.settings[server.id]["CHANNEL"] = server.default_channel.id
@@ -168,7 +180,7 @@ class Welcome:
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": True}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": False}
         memberjoin = self.settings[server.id]["GREETING"].format(member, server)
         e = discord.Embed(title="Joined", description=memberjoin, colour=discord.Colour.blue())
         e.set_thumbnail(url=member.avatar_url)
@@ -205,7 +217,7 @@ class Welcome:
         server = member.server
         greetingmsg = "Welcome {0.mention} to **{1.name}**!"
         leavemsg = "**{0.name}** has left our server! Bye bye **{0.name}**. Hope you had a good stay!"
-        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": True}
+        def_settings = {"GREETING": greetingmsg, "LEAVE": leavemsg, "ON": False, "ONL": False, "CHANNEL": None, "WHISPER": False, "ACCOUNT_WARNINGS": False}
         memberleave = self.settings[server.id]["LEAVE"].format(member, server)
         e = discord.Embed(title="Left", description=memberleave, colour=discord.Colour.red())
         e.set_thumbnail(url=member.avatar_url)
