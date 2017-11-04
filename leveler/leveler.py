@@ -942,7 +942,9 @@ class Leveler:
     @checks.admin_or_permissions(manage_server=True)
     @lvladmin.command(name="chignore", pass_context=True, no_pm=True)
     async def __channelignore(self, ctx, channel):
-        """Set channels to ignore list."""
+        """Set channels to ignore list.
+        
+        Please use Channel IDs only! Not Channel mentions!"""
         server = ctx.message.server
         chid = fileIO("data/leveler/channels.json", "load")
         if server.id not in chid:
@@ -3062,7 +3064,7 @@ def check_files():
 
     fd = "data/leveler/channels.json"
     if not fileIO(fd, "check"):
-        print("Creating badges.json...")
+        print("Creating channels.json...")
         fileIO(fd, "save", {})
 
 def setup(bot):
