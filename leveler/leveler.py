@@ -790,6 +790,7 @@ class Leveler:
         else:
             await self.bot.say("**Your description has too many characters! Must be <{}**".format(max_char))
 
+
     @levelupset.command(name = "bg", pass_context=True, no_pm=True)
     async def levelbg(self, ctx, *, image_name:str):
         """Set your level background"""
@@ -936,6 +937,42 @@ class Leveler:
         em = discord.Embed(description=msg, colour=user.colour)
         em.set_author(name="Settings Overview for {}".format(self.bot.user.name))
         await self.bot.say(embed = em)
+
+
+    @checks.admin_or_permissions(manage_server=True)
+    @lvladmin.command(name="chignore", pass_context=True, no_pm=True)
+    async def __channelignore(self, ctx, channel):
+        """Set channels to ignore list."""
+        server = ctx.message.server
+        chid = fileIO("data/leveler/channels.json", "load")
+        if server.id not in chid:
+            chid[server.id] = {}
+            newserv = chid
+            fileIO("data/leveler/channels.json", "save", newserv)
+            return
+
+        if channel in chid[server.id]:
+            chid[server.id].remove(channel)
+            fileIO("data/leveler/channels.json", "save", chid)
+            msg = ("Channel has been removed from the ignore list!")
+            em = discord.Embed(description=msg, color=discord.Color.green())
+            await self.bot.say(embed=em)
+            return
+        elif channel not in chid[server.id]:
+            try:
+                chid[server.id].append(channel)
+                fileIO("data/leveler/channels.json", "save", chid)
+                msg = ("Channel has been added to the ignore list!")
+                em = discord.Embed(description=msg, color=discord.Color.green())
+                await self.bot.say(embed=em)
+                return
+            except:
+                chid[server.id] = [channel]
+                fileIO("data/leveler/channels.json", "save", chid)
+                msg = ("Channel has been added to the ignore list!")
+                em = discord.Embed(description=msg, color=discord.Color.green())
+                await self.bot.say(embed=em)
+                pass
 
     @lvladmin.command(pass_context=True, no_pm=True)
     async def msgcredits(self, ctx, credits:int = 0):
@@ -2646,6 +2683,9 @@ class Leveler:
                 userinfo["chat_block"] = 0
 
             if float(curr_time) - float(userinfo["chat_block"]) >= 120 and not any(text.startswith(x) for x in prefix):
+                chid = fileIO("data/leveler/channels.json", "load")
+                if channel.id in chid[server.id]:
+                    return
                 await self._process_exp(message, userinfo, random.randint(15, 20))
                 await self._give_chat_credit(user, server)
             #except AttributeError as e:
@@ -3019,6 +3059,11 @@ def check_files():
     if not fileIO(f, "check"):
         print("Creating badges.json...")
         fileIO(f, "save", {})
+
+    fd = "data/leveler/channels.json"
+    if not fileIO(fd, "check"):
+        print("Creating badges.json...")
+        fileIO(fd, "save", {})
 
 def setup(bot):
     check_folders()
