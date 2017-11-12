@@ -62,6 +62,7 @@ class Leveler:
         self.settings = fileIO("data/leveler/settings.json", "load")
         bot_settings = fileIO("data/red/settings.json", "load")
         self.owner = bot_settings["OWNER"]
+        self.chid = fileIO("data/leveler/channels.json", "load")
 
         dbs = client.database_names()
         if 'leveler' not in dbs:
@@ -2684,10 +2685,12 @@ class Leveler:
             if "chat_block" not in userinfo:
                 userinfo["chat_block"] = 0
 
+            if server.id not in self.chid:
+                return
+            if channel.id in self.chid[server.id]:
+                return
+
             if float(curr_time) - float(userinfo["chat_block"]) >= 120 and not any(text.startswith(x) for x in prefix):
-                chid = fileIO("data/leveler/channels.json", "load")
-                if channel.id in chid[server.id]:
-                    return
                 await self._process_exp(message, userinfo, random.randint(15, 20))
                 await self._give_chat_credit(user, server)
             #except AttributeError as e:
