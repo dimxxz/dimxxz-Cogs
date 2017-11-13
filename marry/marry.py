@@ -103,12 +103,29 @@ class Marry:
         await self.bot.add_roles(ctx.message.author, married_role)
         await self.bot.add_roles(yourlovedone, married_role)
         msg = "You married **{0}** in **{1}**\nYour divorce id is `{2}`, don't ever give this to anyone or they can divorce you!\nTo divorce type `{3}divorce {2}`.".format(str(yourlovedone), ctx.message.server.name, married_role.id, ctx.prefix)
-        e = discord.Embed(description=msg, colour=discord.Colour.blue())
-        await self.bot.send_message(ctx.message.author, embed = e)
+        try:
+            e = discord.Embed(description=msg, colour=discord.Colour.blue())
+            await self.bot.send_message(ctx.message.author, embed = e)
+        except:
+            em = discord.Embed(description="Please turn on PM, **{}**!\nI can't DM you!".format(ctx.message.author.name), colour=discord.Colour.red())
+            await self.bot.say(embed=em)
+            await self.bot.delete_role(ctx.message.server, married_role)
+            em = discord.Embed(description="Canceling marriage!".format(yourlovedone.name), colour=discord.Colour.red())
+            await self.bot.say(embed=em)
+            return
+
         if not yourlovedone.bot:
             msg = "You married **{0}** in **{1}**\nYour divorce id is `{2}`, don't ever give this to anyone or they can divorce you!\nTo divorce type `{3}divorce {2}`.".format(str(ctx.message.author), ctx.message.server.name, married_role.id, ctx.prefix)
-            e = discord.Embed(description=msg, colour=discord.Colour.blue())
-            await self.bot.send_message(yourlovedone, embed = e)
+            try:
+                e = discord.Embed(description=msg, colour=discord.Colour.blue())
+                await self.bot.send_message(yourlovedone, embed = e)
+            except:
+                em = discord.Embed(description="Please turn on PM, **{}**!\nI can't DM you!".format(yourlovedone.name), colour=discord.Colour.red())
+                await self.bot.say(embed=em)
+                await self.bot.delete_role(ctx.message.server, married_role)
+                em = discord.Embed(description="Canceling marriage!".format(yourlovedone.name), colour=discord.Colour.red())
+                await self.bot.say(embed=em)
+                return
         else:
             pass
         marchan = discord.utils.find(lambda c: c.name == 'marriage', ctx.message.server.channels)
@@ -184,8 +201,17 @@ class Marry:
             return
         await self.bot.add_roles(ctx.message.author, married_role)
         msg = "You married **{0}** in **{1}**\nYour divorce id is `{2}`, don't ever give this to anyone or they can divorce you!\nTo divorce type `{3}divorce {2}`.".format(str(thing), ctx.message.server.name, married_role.id, ctx.prefix)
-        e = discord.Embed(description=msg, colour=discord.Colour.green())
-        await self.bot.send_message(ctx.message.author, embed=e)
+        try:
+            e = discord.Embed(description=msg, colour=discord.Colour.green())
+            await self.bot.send_message(ctx.message.author, embed=e)
+        except:
+            em = discord.Embed(description="Please turn on PM, **{}**!\nI can't DM you!".format(ctx.messge.author.name), colour=discord.Colour.red())
+            await self.bot.say(embed=em)
+            await self.bot.delete_role(ctx.message.server, married_role)
+            em = discord.Embed(description="Canceling marriage!".format(ctx.message.author.name), colour=discord.Colour.red())
+            await self.bot.say(embed=em)
+            return
+
         marchan = discord.utils.find(lambda c: c.name == 'marriage', ctx.message.server.channels)
         if marchan:
             msg = "You're now married, congratulations!"
