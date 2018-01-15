@@ -3,6 +3,8 @@ Original cog written by stevy/Maybe-Useful-Cogs https://github.com/AznStevy/Mayb
 All credits go to stevy for this cog.
 If you need support for this cog, please visit stevy's github page.
 
+- This is a new design of the leveler cog. It is still WIP according to stevy!
+- Please keep that in mind when using this newer version!
 
 ----------------------------------------------------------------------------------------------
 Slightly modified and improved by me, dimxxz
