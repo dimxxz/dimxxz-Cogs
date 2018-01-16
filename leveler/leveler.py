@@ -25,6 +25,10 @@ except:
     raise RuntimeError("Can't load pillow. Do 'pip3 install pillow'.")
 import time
 
+__author__ = "stevy"
+# written by stevy https://github.com/AznStevy/Maybe-Useful-Cogs
+# slightly modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
+
 # fonts
 font_file = 'data/leveler/fonts/font.ttf'
 font_bold_file = 'data/leveler/fonts/font_bold.ttf'
@@ -57,6 +61,7 @@ class Leveler:
         self.settings = fileIO("data/leveler/settings.json", "load")
         bot_settings = fileIO("data/red/settings.json", "load")
         self.owner = bot_settings["OWNER"]
+        self.chid = fileIO("data/leveler/channels.json", "load")
 
         dbs = client.database_names()
         if 'leveler' not in dbs:
@@ -1048,6 +1053,14 @@ class Leveler:
             else:
                 await self.bot.say("**There was an error with economy cog. Fix to allow purchases or set price to $0. Currently ${}**".format(prefix, self.settings["bg_price"]))
                 return False
+		
+    async def _give_chat_credit(self, user, server):
+        try:
+            bank = self.bot.get_cog('Economy').bank
+            if bank.account_exists(user) and "msg_credits" in self.settings:
+                bank.deposit_credits(user, self.settings["msg_credits"][server.id])
+        except:
+            pass
 
     @checks.is_owner()
     @lvladmin.command(no_pm=True)
@@ -2642,7 +2655,7 @@ class Leveler:
             exp_color = tuple(userinfo["rank_info_color"])
             exp_color = (exp_color[0], exp_color[1], exp_color[2], 180) # increase transparency
         else:
-            exp_color = (230,230,230, 180)
+            exp_color = (140,140,140,230)
         draw_overlay.rectangle([(0,20), (exp_width,30)], fill=exp_color) # Exp bar
         draw_overlay.rectangle([(0,30), (bg_width,31)], fill=(0,0,0,255)) # Divider
         # draw_overlay.rectangle([(0,35), (bg_width,100)], fill=(230,230,230,0)) # title overlay
@@ -2989,28 +3002,29 @@ class Leveler:
                     if channel.id in self.chid[server.id]:
                         return
                 await self._process_exp(message, userinfo, random.randint(15, 20))
+                await self._give_chat_credit(user, server)
             #except AttributeError as e:
                 #pass
 
     async def _process_exp(self, message, userinfo, exp:int):
         server = message.author.server
         channel = message.channel
-        user = message.author
+        user = message.author  # add to total exp
 
         required = self._required_exp(userinfo["servers"][server.id]["level"])
         if userinfo["servers"][server.id]["current_exp"] + exp >= required:
             userinfo["servers"][server.id]["level"] += 1
-            db.users.update_one({'user_id':user.id}, {'$set':{
+            db.users.update_one({'user_id': user.id}, {'$set': {
                 "servers.{}.level".format(server.id): userinfo["servers"][server.id]["level"],
                 "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp - required,
                 "chat_block": time.time(),
-                "total_exp": userinfo["total_exp"] + exp # add to total exp
+                "total_exp": userinfo["total_exp"] + exp  # add to total exp
                 }})
             await self._handle_levelup(user, userinfo, server, channel)
         else:
-            db.users.update_one({'user_id':user.id}, {'$set':{
+            db.users.update_one({'user_id': user.id}, {'$set': {
                 "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp,
-                "total_exp": userinfo["total_exp"] + exp, # add to total exp
+                "total_exp": userinfo["total_exp"] + exp,  # add to total exp
                 "chat_block": time.time()
                 }})
 
@@ -3366,5 +3380,5 @@ def setup(bot):
     check_folders()
     check_files()
     n = Leveler(bot)
-    # bot.add_listener(n._handle_on_message, "on_message")
+    bot.add_listener(n._handle_on_message, "on_message")
     bot.add_cog(n)
