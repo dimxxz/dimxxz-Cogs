@@ -107,7 +107,10 @@ class Leveler:
         else:
             await self.draw_profile(user, server)
             await self.bot.send_typing(channel)
-            await self.bot.send_file(channel, 'data/leveler/temp/{}_profile.png'.format(user.id), content='**User profile for {}**'.format(self._is_mention(user)))
+            try:
+                await self.bot.send_file(channel, 'data/leveler/temp/{}_profile.png'.format(user.id), content='**User profile for {}**'.format(self._is_mention(user)))
+            except:
+                return
             db.users.update_one({'user_id':user.id}, {'$set':{
                     "profile_block": curr_time,
                 }}, upsert = True)
@@ -172,7 +175,10 @@ class Leveler:
         else:
             await self.draw_rank(user, server)
             await self.bot.send_typing(channel)
-            await self.bot.send_file(channel, 'data/leveler/temp/{}_rank.png'.format(user.id), content='**Ranking & Statistics for {}**'.format(self._is_mention(user)))
+            try:
+                await self.bot.send_file(channel, 'data/leveler/temp/{}_rank.png'.format(user.id), content='**Ranking & Statistics for {}**'.format(self._is_mention(user)))
+            except:
+                return
             db.users.update_one({'user_id':user.id}, {'$set':{
                     "rank_block".format(server.id): curr_time,
                 }}, upsert = True)
@@ -1986,15 +1992,15 @@ class Leveler:
         font_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf'
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
-        name_fnt = ImageFont.truetype(font_heavy_file, 30)
+        name_fnt = ImageFont.truetype(font_heavy_file, 22)
         name_u_fnt = ImageFont.truetype(font_unicode_file, 30)
-        title_fnt = ImageFont.truetype(font_heavy_file, 22)
+        title_fnt = ImageFont.truetype(font_heavy_file, 15)
         title_u_fnt = ImageFont.truetype(font_unicode_file, 23)
         label_fnt = ImageFont.truetype(font_bold_file, 18)
         exp_fnt = ImageFont.truetype(font_bold_file, 13)
         large_fnt = ImageFont.truetype(font_thin_file, 33)
         rep_fnt = ImageFont.truetype(font_heavy_file, 26)
-        rep_u_fnt = ImageFont.truetype(font_unicode_file, 30)
+        rep_u_fnt = ImageFont.truetype(font_unicode_file, 25)
         text_fnt = ImageFont.truetype(font_file, 14)
         text_u_fnt = ImageFont.truetype(font_unicode_file, 14)
         symbol_u_fnt = ImageFont.truetype(font_unicode_file, 15)
@@ -2059,7 +2065,16 @@ class Leveler:
         with open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id),'wb') as f:
             f.write(image)
 
-        bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
+        #bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
+        try:
+            bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
+        except:
+            image_name = "default"
+            # if image_name in self.backgrounds["profile"].keys():
+            db.users.update_one({'user_id': user.id},
+                                {'$set': {"profile_background": self.backgrounds["profile"][image_name]}})
+            await self.bot.say("Profile Background has been reset to default! Please run the Profile command again!")
+            return
         profile_image = Image.open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id)).convert('RGBA')
 
         # set canvas
@@ -2136,8 +2151,8 @@ class Leveler:
 
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
-        _write_unicode("❤", 257, 9, rep_fnt, rep_u_fnt, info_text_color)
-        draw.text((self._center(278, 340, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
+        _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color)
+        draw.text((self._center(50, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
 
         lvl_left = 100
         label_align = 362 # vertical
@@ -2576,7 +2591,7 @@ class Leveler:
         name_u_fnt = ImageFont.truetype(font_unicode_file, 24)
         label_fnt = ImageFont.truetype(font_bold_file, 16)
         exp_fnt = ImageFont.truetype(font_bold_file, 9)
-        large_fnt = ImageFont.truetype(font_thin_file, 24)
+        large_fnt = ImageFont.truetype(font_file, 20)
         large_bold_fnt = ImageFont.truetype(font_bold_file, 24)
         symbol_u_fnt = ImageFont.truetype(font_unicode_file, 15)
 
@@ -2622,7 +2637,15 @@ class Leveler:
         with open('data/leveler/temp/test_temp_server_icon.png'.format(user.id),'wb') as f:
             f.write(image)
 
-        bg_image = Image.open('data/leveler/temp/test_temp_rank_bg.png'.format(user.id)).convert('RGBA')
+        try:
+            bg_image = Image.open('data/leveler/temp/test_temp_rank_bg.png'.format(user.id)).convert('RGBA')
+        except:
+            image_name = "default"
+            # if image_name in self.backgrounds["profile"].keys():
+            db.users.update_one({'user_id': user.id},
+                                {'$set': {"rank_background": self.backgrounds["rank"][image_name]}})
+            await self.bot.say("Rank Background has been reset to default! Please run the Rank command again!")
+            return
         profile_image = Image.open('data/leveler/temp/test_temp_rank_profile.png'.format(user.id)).convert('RGBA')
         server_image = Image.open('data/leveler/temp/test_temp_server_icon.png'.format(user.id)).convert('RGBA')
 
@@ -2899,7 +2922,15 @@ class Leveler:
         with open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id),'wb') as f:
             f.write(image)
 
-        bg_image = Image.open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id)).convert('RGBA')
+        try:
+            bg_image = Image.open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id)).convert('RGBA')
+        except:
+            image_name = "default"
+            # if image_name in self.backgrounds["profile"].keys():
+            db.users.update_one({'user_id': user.id},
+                                {'$set': {"levelup_background": self.backgrounds["levelup"][image_name]}})
+            await self.bot.say("Level-up Background has been reset to default!")
+            return
         profile_image = Image.open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id)).convert('RGBA')
 
         # set canvas
@@ -3091,7 +3122,12 @@ class Leveler:
             else:
                 await self.draw_levelup(user, server)
                 await self.bot.send_typing(channel)
-                await self.bot.send_file(channel, 'data/leveler/temp/{}_level.png'.format(user.id), content='**{} just gained a level{}!**'.format(name, server_identifier))
+                try:
+                    await self.bot.send_file(channel, 'data/leveler/temp/{}_level.png'.format(user.id), content='**{} just gained a level{}!**'.format(name, server_identifier))
+                except:
+                    em = discord.Embed(description='**{} just gained a level{}! (LEVEL {})**'.format(name, server_identifier,
+                                                                                      new_level), colour=user.colour)
+                    await self.bot.send_message(channel, '', embed=em)
         else:
             if "lvl_msg_lock" in self.settings.keys() and server.id in self.settings["lvl_msg_lock"].keys():
                 channel_id = self.settings["lvl_msg_lock"][server.id]
@@ -3329,7 +3365,7 @@ def check_files():
         "mention" : True,
         "text_only": [],
         "server_roles": {},
-        "rep_cooldown": 43200,
+        "rep_cooldown": 86400,
         "chat_cooldown": 120
         }
 
@@ -3375,6 +3411,11 @@ def check_files():
     if not fileIO(f, "check"):
         print("Creating badges.json...")
         fileIO(f, "save", {})
+
+    fd = "data/leveler/channels.json"
+    if not fileIO(fd, "check"):
+        print("Creating channels.json...")
+        fileIO(fd, "save", {})
 
 def setup(bot):
     check_folders()
