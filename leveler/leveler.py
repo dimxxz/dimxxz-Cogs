@@ -2152,7 +2152,7 @@ class Leveler:
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
         _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color)
-        draw.text((self._center(50, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
+        draw.text((self._center(60, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
 
         lvl_left = 100
         label_align = 362 # vertical
@@ -2896,7 +2896,7 @@ class Leveler:
 
     async def draw_levelup(self, user, server):
         # fonts
-        font_thin_file = 'data/leveler/fonts/Uni_Sans_Thin.ttf'
+        font_thin_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf'
         level_fnt = ImageFont.truetype(font_thin_file, 23)
 
         userinfo = db.users.find_one({'user_id':user.id})
@@ -2996,7 +2996,7 @@ class Leveler:
         dark_text = (35, 35, 35, 230)
         level_up_text = self._contrast(info_color, white_text, dark_text)
         lvl_text = "LEVEL {}".format(userinfo["servers"][server.id]["level"])
-        draw.text((self._center(60, 170, lvl_text, level_fnt), 23), lvl_text, font=level_fnt, fill=level_up_text) # Level Number
+        draw.text((self._center(60, 170, lvl_text, level_fnt), 18), lvl_text, font=level_fnt, fill=level_up_text) # Level Number
 
         result = Image.alpha_composite(result, process)
         result = self._add_corners(result, int(height/2))
