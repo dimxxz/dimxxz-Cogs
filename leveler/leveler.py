@@ -1443,7 +1443,7 @@ class Leveler:
 
     @checks.mod_or_permissions(manage_roles=True)
     @badge.command(name="add", pass_context = True, no_pm=True)
-    async def addbadge(self, ctx, name:str, bg_img:str, border_color:str, price:int, *, description:str):
+    async def addbadge(self, ctx, name:str, bg_img:str, price:int, *, description:str):
         """Add a badge. name = "Use Quotes", Colors = #hex. bg_img = url, price = -1(non-purchasable), 0,..."""
 
         user = ctx.message.author
@@ -1476,10 +1476,6 @@ class Leveler:
 
         if not await self._valid_image_url(bg_img):
             await self.bot.say("**Background is not valid. Enter hex or image url!**")
-            return
-
-        if not self._is_hex(border_color):
-            await self.bot.say("**Border color is not valid!**")
             return
 
         if price < -1:
@@ -1622,9 +1618,19 @@ class Leveler:
             await self.bot.say("Leveler commands for this server are disabled.")
             return
 
-        serverbadges = db.badges.find_one({'server_id':server.id})
-        badges = serverbadges['badges']
-        badge_name = "{}_{}".format(name, server.id)
+        if '-global' in name and org_user.id == self.owner:
+            name = name.replace(' -global', '')
+            serverid = 'global'
+        else:
+            serverid = server.id
+
+        try:
+            serverbadges = db.badges.find_one({'server_id':serverid})
+            badges = serverbadges['badges']
+            badge_name = "{}_{}".format(name, serverid)
+        except:
+            await self.bot.say("**You don't have permission for that badge!**")
+            return
 
         if name not in badges:
             await self.bot.say("**That badge doesn't exist in this server!**")
@@ -1635,7 +1641,7 @@ class Leveler:
         else:
             userinfo["badges"][badge_name] = badges[name]
             db.users.update_one({'user_id':user.id}, {'$set':{"badges": userinfo["badges"]}})
-            await self.bot.say("**{} has just given `{}` the `{}` badge!**".format(self._is_mention(org_user), self._is_mention(user), name))
+            await self.bot.say("{} has just given {} the **{}** badge!".format(self._is_mention(org_user), self._is_mention(user), name))
 
     @checks.mod_or_permissions(manage_roles=True)
     @badge.command(pass_context = True, no_pm=True)
@@ -1652,9 +1658,19 @@ class Leveler:
             await self.bot.say("Leveler commands for this server are disabled.")
             return
 
-        serverbadges = db.badges.find_one({'server_id':server.id})
-        badges = serverbadges['badges']
-        badge_name = "{}_{}".format(name, server.id)
+        if '-global' in name and org_user.id == self.owner:
+            name = name.replace(' -global', '')
+            serverid = 'global'
+        else:
+            serverid = server.id
+
+        try:
+            serverbadges = db.badges.find_one({'server_id':serverid})
+            badges = serverbadges['badges']
+            badge_name = "{}_{}".format(name, serverid)
+        except:
+            await self.bot.say("**You don't have permission for that badge!**")
+            return
 
         if name not in badges:
             await self.bot.say("**That badge doesn't exist in this server!**")
@@ -1664,7 +1680,7 @@ class Leveler:
             if userinfo['badges'][badge_name]['price'] == -1:
                 del userinfo["badges"][badge_name]
                 db.users.update_one({'user_id':user.id}, {'$set':{"badges": userinfo["badges"]}})
-                await self.bot.say("**{} has taken the `{}` badge from {}! :upside_down:**".format(self._is_mention(org_user), name, self._is_mention(user)))
+                await self.bot.say("{} has taken the **{}** badge from {}! :upside_down:".format(self._is_mention(org_user), name, self._is_mention(user)))
             else:
                 await self.bot.say("**You can't take away purchasable badges!**")
 
@@ -2242,7 +2258,7 @@ class Leveler:
                     pair = sorted_badges[num]
                     badge = pair[0]
                     bg_color = badge["bg_img"]
-                    border_color = badge["border_color"]
+                    border_color = None
                     # draw mask circle
                     mask = Image.new('L', (raw_length, raw_length), 0)
                     draw_thumb = ImageDraw.Draw(mask)
