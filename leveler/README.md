@@ -16,6 +16,8 @@ Changes that have been made:
 4. Added Ignore Channel Feature: listed Channel IDs won't process EXP/ Credits
 5. Auto reset Background feature (in case a custom bg is removed or link not working)
 6. Slight changes to the design/font
+7. Removed Badge border color
+8. Bot owner can give global badges to users
 
 
 Installation:
