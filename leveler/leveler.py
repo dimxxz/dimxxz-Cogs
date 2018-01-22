@@ -3,6 +3,7 @@ from discord.ext import commands
 from discord.utils import find
 from .utils.chat_formatting import pagify
 from __main__ import send_cmd_help
+from __main__ import settings as bot_settings
 import platform, asyncio, string, operator, random, textwrap
 import os, re, aiohttp
 import math
@@ -97,7 +98,9 @@ class Leveler:
 
         # check if disabled
         if server.id in self.settings["disabled_servers"]:
-            await self.bot.say("**Leveler commands for this server are disabled!**")
+            message = ("**Leveler commands for this server are disabled!**")
+            em = discord.Embed(description=message, colour=discord.Color.blue())
+            await self.bot.say(embed=em)
             return
 
         # no cooldown for text only
@@ -142,7 +145,7 @@ class Leveler:
                 credits = 0
         except:
             credits = 0
-        em.add_field(name="Credits: ", value = "${}".format(credits))
+        em.add_field(name="Leeks: ", value = "{}".format(credits))
         em.add_field(name="Info: ", value = test_empty(userinfo["info"]))
         em.add_field(name="Badges: ", value = test_empty(", ".join(userinfo["badges"])).replace("_", " "))
         em.set_author(name="Profile for {}".format(user.name), url = user.avatar_url)
@@ -900,9 +903,31 @@ class Leveler:
     @commands.group(pass_context=True)
     async def lvladmin(self, ctx):
         """Admin Toggle Features"""
+        #if ctx.invoked_subcommand is None:
+        #    await send_cmd_help(ctx)
+        #    return
         if ctx.invoked_subcommand is None:
-            await send_cmd_help(ctx)
-            return
+            try:
+                server = ctx.message.server
+                prefix = ctx.prefix
+                title = '**{}\'s Level System (Admin Mode):**\n'.format(server.me.name)
+                msg = 'List of available commands for **{}lvladmin**:\n\n'.format(prefix)
+                msg += 'overview             -  A list of settings.\n'
+                msg += 'chignore     -  Sets channels to ignore list.\n'
+                msg += 'msgcredits              -  Leeks per message logged. Default = 0\n'
+                msg += 'lock              -  Locks level-up messages to one channel.\n'
+                msg += 'toggle              -  Toggles most leveler commands on the current server.\n'
+                msg += 'textonly              -  Toggles text-based messages on the server.\n'
+                msg += 'alerts              -  Toggles level-up messages on the server.\n'
+                msg += 'private              -  Toggles lvl alert to DM mode.\n\n'
+                msg += '**Example for command usage:**\n'
+                msg += '{}selfrole get <role>\n'.format(prefix)
+                e = discord.Embed(title=title, description=msg, color=discord.Color.dark_blue())
+                await self.bot.say(embed=e)
+            except:
+                message = 'This command won\'t work in DM!'
+                e = discord.Embed(description=message, colour=discord.Color.red())
+                await self.bot.say(embed=e)
 
     @checks.admin_or_permissions(manage_server=True)
     @lvladmin.group(pass_context=True)
@@ -986,19 +1011,19 @@ class Leveler:
 
     @lvladmin.command(pass_context=True, no_pm=True)
     async def msgcredits(self, ctx, credits:int = 0):
-        '''Credits per message logged. Default = 0'''
+        '''Leeks per message logged. Default = 0'''
         channel = ctx.message.channel
         server = ctx.message.server
 
-        if credits < 0 or credits > 1000:
-            await self.bot.say("**Please enter a valid number (0 - 1000)**".format(channel.name))
+        if credits < 0 or credits > 10:
+            await self.bot.say("**Please enter a valid number (0 - 10)**".format(channel.name))
             return
 
         if "msg_credits" not in self.settings.keys():
             self.settings["msg_credits"] = {}
 
         self.settings["msg_credits"][server.id] = credits
-        await self.bot.say("**Credits per message logged set to `{}`.**".format(str(credits)))
+        await self.bot.say("**Leeks per message logged set to `{}`.**".format(str(credits)))
 
         fileIO('data/leveler/settings.json', "save", self.settings)
 
@@ -1032,10 +1057,10 @@ class Leveler:
             bank = self.bot.get_cog('Economy').bank
             if bank.account_exists(user) and self.settings["bg_price"] != 0:
                 if not bank.can_spend(user, self.settings["bg_price"]):
-                    await self.bot.say("**Insufficient funds. Backgrounds changes cost: ${}**".format(self.settings["bg_price"]))
+                    await self.bot.say("**Insufficient funds. Backgrounds changes cost: {} Leeks**".format(self.settings["bg_price"]))
                     return False
                 else:
-                    await self.bot.say('**{}, you are about to buy a background for `{}`. Confirm by typing `yes`.**'.format(self._is_mention(user), self.settings["bg_price"]))
+                    await self.bot.say('**{}, you are about to buy a background for `{}` Leeks. Confirm by typing `yes`.**'.format(self._is_mention(user), self.settings["bg_price"]))
                     answer = await self.bot.wait_for_message(timeout=15, author=user)
                     if answer is None:
                         await self.bot.say('**Purchase canceled.**')
@@ -1057,9 +1082,9 @@ class Leveler:
             if self.settings["bg_price"] == 0:
                 return True
             else:
-                await self.bot.say("**There was an error with economy cog. Fix to allow purchases or set price to $0. Currently ${}**".format(prefix, self.settings["bg_price"]))
+                await self.bot.say("**There was an error with economy cog. Fix to allow purchases or set price to 0 Leeks. Currently {} Leeks**".format(prefix, self.settings["bg_price"]))
                 return False
-		
+
     async def _give_chat_credit(self, user, server):
         try:
             bank = self.bot.get_cog('Economy').bank
@@ -1067,7 +1092,7 @@ class Leveler:
                 bank.deposit_credits(user, self.settings["msg_credits"][server.id])
         except:
             pass
-
+			
     @checks.is_owner()
     @lvladmin.command(no_pm=True)
     async def setprice(self, price:int):
@@ -1257,9 +1282,33 @@ class Leveler:
     @commands.group(pass_context=True)
     async def badge(self, ctx):
         """Badge Configuration Options"""
+        #if ctx.invoked_subcommand is None:
+        #    await send_cmd_help(ctx)
+        #    return
         if ctx.invoked_subcommand is None:
-            await send_cmd_help(ctx)
-            return
+            try:
+                server = ctx.message.server
+                prefix = ctx.prefix
+                title = '**{}\'s Leveling Badge System:**\n'.format(server.me.name)
+                msg = 'List of available commands for **{}badge**:\n\n'.format(prefix)
+                msg += 'available         -  Lists available badges.\n'
+                msg += 'list                   -  Lists the badges of a user.\n'
+                msg += 'buy                  -  Gets a badge from the repository.\n'
+                msg += 'set                   -  Sets a badge to profile.\n'
+                msg += 'add                  -  Adds a badge.\n'
+                msg += 'delete             -  Deletes a badge and remove from all users.\n'
+                msg += 'give                 -  Gives a user a badge with a certain name.\n'
+                msg += 'take                -  Takes a user\'s badge.\n'
+                msg += 'link                 -  Associates a badge with a level.\n'
+                msg += 'unlink             -  Deletes a badge/level association.\n'
+                msg += 'listlinks          -  Lists level/badge associations.\n\n'
+                #msg += '**Example for command usage:**\n'
+                e = discord.Embed(title=title, description=msg, color=discord.Color.dark_blue())
+                await self.bot.say(embed=e)
+            except:
+                message = 'This command won\'t work in DM!'
+                e = discord.Embed(description=message, colour=discord.Color.red())
+                await self.bot.say(embed=e)
 
     @badge.command(name="available", pass_context=True, no_pm=True)
     async def available(self, ctx, global_badge:str = None):
@@ -1327,7 +1376,7 @@ class Leveler:
             priority_num = badge["priority_num"]
             if priority_num != -1:
                 priority_badges.append((badge, priority_num))
-        sorted_badges = sorted(priority_badges, key=operator.itemgetter(1), reverse=True)
+        sorted_badges = sorted(priority_badges, key=operator.itemgetter(1), reverse=False)
 
         badge_ranks = ""
         counter = 1
@@ -1382,7 +1431,7 @@ class Leveler:
                     else:
                         # use the economy cog
                         bank = self.bot.get_cog('Economy').bank
-                        await self.bot.say('**{}, you are about to buy the `{}` badge for `{}`. Confirm by typing "yes"**'.format(self._is_mention(user), name, badge_info['price']))
+                        await self.bot.say('**{}, you are about to buy the `{}` badge for `{}` Leeks. Confirm by typing "yes"**'.format(self._is_mention(user), name, badge_info['price']))
                         answer = await self.bot.wait_for_message(timeout=15, author=user)
                         if answer is None:
                             await self.bot.say('**Purchase canceled.**')
@@ -1397,9 +1446,9 @@ class Leveler:
                                 db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
                                     "badges":userinfo['badges'],
                                     }})
-                                await self.bot.say('**You have bought the `{}` badge for `{}`.**'.format(name, badge_info['price']))
+                                await self.bot.say('**You have bought the `{}` badge for `{}` Leeks.**'.format(name, badge_info['price']))
                             elif bank.account_exists(user) and bank.get_balance(user) < badge_info['price']:
-                                await self.bot.say('**Not enough money! Need `{}` more.**'.format(badge_info['price'] - bank.get_balance(user)))
+                                await self.bot.say('**Not enough money! Need `{}` Leeks more.**'.format(badge_info['price'] - bank.get_balance(user)))
                             else:
                                 await self.bot.say('**User does not exist in bank. Do {}bank register**'.format(prefix))
                 else:
@@ -1407,7 +1456,7 @@ class Leveler:
             else:
                 await self.bot.say('**The badge `{}` does not exist. (try `{}badge available`)**'.format(name, prefix[0]))
         else:
-            await self.bot.say('**There are no badges to get! (try `{}badge get [name] -global`).**'.format(prefix[0]))
+            await self.bot.say('**There are no badges to get! (try `{}badge buy [name] -global`).**'.format(prefix[0]))
 
     @badge.command(name="set", pass_context=True, no_pm=True)
     async def set(self, ctx, name:str, priority_num:int):
@@ -1444,7 +1493,7 @@ class Leveler:
     @checks.mod_or_permissions(manage_roles=True)
     @badge.command(name="add", pass_context = True, no_pm=True)
     async def addbadge(self, ctx, name:str, bg_img:str, price:int, *, description:str):
-        """Add a badge. name = "Use Quotes", Colors = #hex. bg_img = url, price = -1(non-purchasable), 0,..."""
+        """Add a badge. name = "Use Quotes", bg_img = url, price = -1(non-purchasable), 0,..."""
 
         user = ctx.message.author
         server = ctx.message.server
@@ -1477,6 +1526,10 @@ class Leveler:
         if not await self._valid_image_url(bg_img):
             await self.bot.say("**Background is not valid. Enter hex or image url!**")
             return
+
+        #if not self._is_hex(border_color):
+        #    await self.bot.say("**Border color is not valid!**")
+        #    return
 
         if price < -1:
             await self.bot.say("**Price is not valid!**")
@@ -1605,7 +1658,7 @@ class Leveler:
 
     @checks.mod_or_permissions(manage_roles=True)
     @badge.command(pass_context = True, no_pm=True)
-    async def give(self, ctx, user : discord.Member, name: str):
+    async def give(self, ctx, user : discord.Member, *, name: str):
         """Give a user a badge with a certain name"""
         org_user = ctx.message.author
         server = org_user.server
@@ -1631,7 +1684,7 @@ class Leveler:
         except:
             await self.bot.say("**You don't have permission for that badge!**")
             return
-
+        			
         if name not in badges:
             await self.bot.say("**That badge doesn't exist in this server!**")
             return
@@ -1645,7 +1698,7 @@ class Leveler:
 
     @checks.mod_or_permissions(manage_roles=True)
     @badge.command(pass_context = True, no_pm=True)
-    async def take(self, ctx, user : discord.Member, name: str):
+    async def take(self, ctx, user : discord.Member, *, name: str):
         """Take a user's badge."""
         org_user = ctx.message.author
         server = org_user.server
@@ -1755,9 +1808,26 @@ class Leveler:
     @commands.group(pass_context=True)
     async def role(self, ctx):
         """Admin Background Configuration"""
+        #if ctx.invoked_subcommand is None:
+        #    await send_cmd_help(ctx)
+        #    return
         if ctx.invoked_subcommand is None:
-            await send_cmd_help(ctx)
-            return
+            try:
+                server = ctx.message.server
+                prefix = ctx.prefix
+                title = '**{}\'s Leveling Roles System:**\n'.format(server.me.name)
+                msg = 'List of available commands for **{}role**:\n\n'.format(prefix)
+                msg += 'link             -  Associates a role with a level.\n'
+                msg += 'unlink     -  Deletes a role/level association.\n'
+                msg += 'listlinks              -  Lists level/role associations.\n\n'
+                msg += '**Example for command usage:**\n'
+                msg += '{}selfrole get <role>\n'.format(prefix)
+                e = discord.Embed(title=title, description=msg, color=discord.Color.dark_blue())
+                await self.bot.say(embed=e)
+            except:
+                message = 'This command won\'t work in DM!'
+                e = discord.Embed(description=message, colour=discord.Color.red())
+                await self.bot.say(embed=e)
 
     @checks.mod_or_permissions(manage_roles=True)
     @role.command(name = 'link', no_pm=True, pass_context=True)
@@ -1844,10 +1914,28 @@ class Leveler:
     @lvladmin.group(name = "bg", pass_context=True)
     async def lvladminbg(self, ctx):
         """Admin Background Configuration"""
+        #if ctx.invoked_subcommand is None or \
+        #        isinstance(ctx.invoked_subcommand, commands.Group):
+        #    await send_cmd_help(ctx)
+        #    return
         if ctx.invoked_subcommand is None or \
                 isinstance(ctx.invoked_subcommand, commands.Group):
-            await send_cmd_help(ctx)
-            return
+            try:
+                server = ctx.message.server
+                prefix = ctx.prefix
+                title = '**{}\'s Leveling Roles System:**\n'.format(server.me.name)
+                msg = 'List of available commands for **{}role**:\n\n'.format(prefix)
+                msg += 'link             -  Associates a role with a level.\n'
+                msg += 'unlink     -  Deletes a role/level association.\n'
+                msg += 'listlinks              -  Lists level/role associations.\n\n'
+                msg += '**Example for command usage:**\n'
+                msg += '{}selfrole get <role>\n'.format(prefix)
+                e = discord.Embed(title=title, description=msg, color=discord.Color.dark_blue())
+                await self.bot.say(embed=e)
+            except:
+                message = 'This command won\'t work in DM!'
+                e = discord.Embed(description=message, colour=discord.Color.red())
+                await self.bot.say(embed=e)
 
     @checks.is_owner()
     @lvladminbg.command(no_pm=True)
@@ -2009,9 +2097,9 @@ class Leveler:
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
         name_fnt = ImageFont.truetype(font_heavy_file, 22)
-        name_u_fnt = ImageFont.truetype(font_unicode_file, 30)
+        name_u_fnt = ImageFont.truetype(font_unicode_file, 22)
         title_fnt = ImageFont.truetype(font_heavy_file, 15)
-        title_u_fnt = ImageFont.truetype(font_unicode_file, 23)
+        title_u_fnt = ImageFont.truetype(font_unicode_file, 15)
         label_fnt = ImageFont.truetype(font_bold_file, 18)
         exp_fnt = ImageFont.truetype(font_bold_file, 13)
         large_fnt = ImageFont.truetype(font_thin_file, 33)
@@ -2035,7 +2123,13 @@ class Leveler:
         userinfo = db.users.find_one({'user_id':user.id})
         self._badge_convert_dict(userinfo)
         userinfo = db.users.find_one({'user_id':user.id}) ##############################################
+        #try:
         bg_url = userinfo["profile_background"]
+        #except:
+        #    image_name = "default"
+            #if image_name in self.backgrounds["profile"].keys():
+        #    db.users.update_one({'user_id':user.id}, {'$set':{"profile_background": self.backgrounds["profile"][image_name]}})
+        #    bg_url = userinfo["profile_background"]
         profile_url = user.avatar_url
 
         # COLORS
@@ -2081,7 +2175,6 @@ class Leveler:
         with open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id),'wb') as f:
             f.write(image)
 
-        #bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
         try:
             bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
         except:
@@ -2089,8 +2182,13 @@ class Leveler:
             # if image_name in self.backgrounds["profile"].keys():
             db.users.update_one({'user_id': user.id},
                                 {'$set': {"profile_background": self.backgrounds["profile"][image_name]}})
-            await self.bot.say("Profile Background has been reset to default! Please run the Profile command again!")
+            await self.bot.say("Profile Background has been reset to default! Please run `+profile` again!")
             return
+            #bg_url = userinfo["profile_background"]
+            #image = await r.content.read()
+            #with open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id), 'wb') as f:
+            #    f.write(image)
+            #bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
         profile_image = Image.open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id)).convert('RGBA')
 
         # set canvas
@@ -2157,7 +2255,7 @@ class Leveler:
         head_align = 140
         # determine info text color
         info_text_color = self._contrast(info_fill, white_color, dark_color)
-        _write_unicode(self._truncate_text(user.name, 22).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) # NAME
+        _write_unicode(self._truncate_text(user.name, 22).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) #.upper() NAME
         _write_unicode(userinfo["title"].upper(), head_align, 170, title_fnt, title_u_fnt, info_text_color)
 
         # draw divider
@@ -2167,14 +2265,14 @@ class Leveler:
 
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
-        _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color)
-        draw.text((self._center(60, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
+        _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color) #265
+        draw.text((self._center(60, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text 278 340
 
         lvl_left = 100
         label_align = 362 # vertical
         draw.text((self._center(0, 140, "    RANK", label_fnt), label_align), "    RANK",  font=label_fnt, fill=info_text_color) # Rank
         draw.text((self._center(0, 340, "    LEVEL", label_fnt), label_align), "    LEVEL",  font=label_fnt, fill=info_text_color) # Exp
-        draw.text((self._center(200, 340, "BALANCE", label_fnt), label_align), "BALANCE",  font=label_fnt, fill=info_text_color) # Credits
+        draw.text((self._center(200, 340, "LEEKS", label_fnt), label_align), "LEEKS",  font=label_fnt, fill=info_text_color) # Credits
 
         if "linux" in platform.system().lower():
             global_symbol = u"\U0001F30E "
@@ -2209,7 +2307,7 @@ class Leveler:
                 credits = 0
         except:
             credits = 0
-        credit_txt = "${}".format(credits)
+        credit_txt = "{}".format(credits)
         draw.text((self._center(200, 340, credit_txt, large_fnt), label_align-27), self._truncate_text(credit_txt, 18),  font=large_fnt, fill=info_text_color) # Credits
 
         if userinfo["title"] == '':
@@ -2232,7 +2330,7 @@ class Leveler:
             priority_num = badge["priority_num"]
             if priority_num != 0 and priority_num != -1:
                 priority_badges.append((badge, priority_num))
-        sorted_badges = sorted(priority_badges, key=operator.itemgetter(1), reverse=True)
+        sorted_badges = sorted(priority_badges, key=operator.itemgetter(1), reverse=False)
 
         # TODO: simplify this. it shouldn't be this complicated... sacrifices conciseness for customizability
         if "badge_type" not in self.settings.keys() or self.settings["badge_type"] == "circles":
@@ -2258,7 +2356,7 @@ class Leveler:
                     pair = sorted_badges[num]
                     badge = pair[0]
                     bg_color = badge["bg_img"]
-                    border_color = None
+                    border_color = None #badge["border_color"]
                     # draw mask circle
                     mask = Image.new('L', (raw_length, raw_length), 0)
                     draw_thumb = ImageDraw.Draw(mask)
@@ -2624,7 +2722,14 @@ class Leveler:
 
         userinfo = db.users.find_one({'user_id':user.id})
         # get urls
+        #try:
         bg_url = userinfo["rank_background"]
+        #except:
+        #    image_name = "default"
+            # if image_name in self.backgrounds["profile"].keys():
+        #    db.users.update_one({'user_id': user.id},
+        #                        {'$set': {"rank_background": self.backgrounds["rank"][image_name]}})
+        #    bg_url = userinfo["rank_background"]
         profile_url = user.avatar_url
         server_icon_url = server.icon_url
 
@@ -2660,8 +2765,9 @@ class Leveler:
             # if image_name in self.backgrounds["profile"].keys():
             db.users.update_one({'user_id': user.id},
                                 {'$set': {"rank_background": self.backgrounds["rank"][image_name]}})
-            await self.bot.say("Rank Background has been reset to default! Please run the Rank command again!")
+            await self.bot.say("Rank Background has been reset to default! Please run `+rank` again!")
             return
+            #bg_url = userinfo["rank_background"]
         profile_image = Image.open('data/leveler/temp/test_temp_rank_profile.png'.format(user.id)).convert('RGBA')
         server_image = Image.open('data/leveler/temp/test_temp_server_icon.png'.format(user.id)).convert('RGBA')
 
@@ -2694,7 +2800,7 @@ class Leveler:
             exp_color = tuple(userinfo["rank_info_color"])
             exp_color = (exp_color[0], exp_color[1], exp_color[2], 180) # increase transparency
         else:
-            exp_color = (140,140,140,230)
+            exp_color = (140,1140,140,230)
         draw_overlay.rectangle([(0,20), (exp_width,30)], fill=exp_color) # Exp bar
         draw_overlay.rectangle([(0,30), (bg_width,31)], fill=(0,0,0,255)) # Divider
         # draw_overlay.rectangle([(0,35), (bg_width,100)], fill=(230,230,230,0)) # title overlay
@@ -2761,7 +2867,7 @@ class Leveler:
         info_text_color = white_color
         draw.text((self._center(100, 200, "  RANK", label_fnt), v_label_align), "  RANK",  font=label_fnt, fill=info_text_color) # Rank
         draw.text((self._center(100, 360, "  LEVEL", label_fnt), v_label_align), "  LEVEL",  font=label_fnt, fill=info_text_color) # Rank
-        draw.text((self._center(260, 360, "BALANCE", label_fnt), v_label_align), "BALANCE",  font=label_fnt, fill=info_text_color) # Rank
+        draw.text((self._center(260, 360, "LEEKS", label_fnt), v_label_align), "LEEKS",  font=label_fnt, fill=info_text_color) # Rank
         local_symbol = u"\U0001F3E0 "
         if "linux" in platform.system().lower():
             local_symbol = u"\U0001F3E0 "
@@ -2783,7 +2889,7 @@ class Leveler:
                 credits = 0
         except:
             credits = 0
-        credit_txt = "${}".format(credits)
+        credit_txt = "{}".format(credits)
         draw.text((self._center(260, 360, credit_txt, large_fnt), v_label_align - 30), credit_txt,  font=large_fnt, fill=info_text_color) # Balance
         exp_text = "{}/{}".format(exp_frac, exp_total)
         draw.text((self._center(80, 360, exp_text, exp_fnt), 19), exp_text,  font=exp_fnt, fill=info_text_color) # Rank
@@ -2912,7 +3018,7 @@ class Leveler:
 
     async def draw_levelup(self, user, server):
         # fonts
-        font_thin_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf'
+        font_thin_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf' #Uni_Sans_Thin.ttf'
         level_fnt = ImageFont.truetype(font_thin_file, 23)
 
         userinfo = db.users.find_one({'user_id':user.id})
@@ -3021,7 +3127,8 @@ class Leveler:
 
     async def _handle_on_message(self, message):
         #try:
-        if message.content.lower().startswith("{}".format(prefix)):
+        if message.content.lower().startswith("{}".format(prefix)) or message.content.lower().startswith(
+                '-') or message.content.lower().startswith('t!'):
             return
         else:
             text = message.content
@@ -3056,24 +3163,45 @@ class Leveler:
     async def _process_exp(self, message, userinfo, exp:int):
         server = message.author.server
         channel = message.channel
-        user = message.author  # add to total exp
+        user = message.author
 
         required = self._required_exp(userinfo["servers"][server.id]["level"])
         if userinfo["servers"][server.id]["current_exp"] + exp >= required:
             userinfo["servers"][server.id]["level"] += 1
-            db.users.update_one({'user_id': user.id}, {'$set': {
+            db.users.update_one({'user_id':user.id}, {'$set':{
                 "servers.{}.level".format(server.id): userinfo["servers"][server.id]["level"],
                 "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp - required,
                 "chat_block": time.time(),
-                "total_exp": userinfo["total_exp"] + exp  # add to total exp
+                "total_exp": userinfo["total_exp"] + exp # add to total exp
                 }})
             await self._handle_levelup(user, userinfo, server, channel)
         else:
-            db.users.update_one({'user_id': user.id}, {'$set': {
+            db.users.update_one({'user_id':user.id}, {'$set':{
                 "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp,
-                "total_exp": userinfo["total_exp"] + exp,  # add to total exp
+                "total_exp": userinfo["total_exp"] + exp, # add to total exp
                 "chat_block": time.time()
                 }})
+        # add to total exp
+        #try:
+        #    required = self._required_exp(userinfo["servers"][server.id]["level"])
+        #    db.users.update_one({'user_id':user.id}, {'$set':{
+        #        "total_exp": userinfo["total_exp"] + exp,
+        #        }})
+        #except:
+        #    pass
+        #if userinfo["servers"][server.id]["current_exp"] + exp >= required:
+        #    userinfo["servers"][server.id]["level"] += 1
+        #    db.users.update_one({'user_id':user.id}, {'$set':{
+        #        "servers.{}.level".format(server.id): userinfo["servers"][server.id]["level"],
+        #        "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp - required,
+        #        "chat_block": time.time()
+        #        }})
+        #    await self._handle_levelup(user, userinfo, server, channel)
+        #else:
+        #    db.users.update_one({'user_id':user.id}, {'$set':{
+        #        "servers.{}.current_exp".format(server.id): userinfo["servers"][server.id]["current_exp"] + exp,
+        #        "chat_block": time.time()
+        #        }})
 
     async def _handle_levelup(self, user, userinfo, server, channel):
         if not isinstance(self.settings["lvl_msg"], list):
@@ -3138,6 +3266,7 @@ class Leveler:
             else:
                 await self.draw_levelup(user, server)
                 await self.bot.send_typing(channel)
+                #await self.bot.send_file(channel, 'data/leveler/temp/{}_level.png'.format(user.id), content='**{} just gained a level{}!**'.format(name, server_identifier))
                 try:
                     await self.bot.send_file(channel, 'data/leveler/temp/{}_level.png'.format(user.id), content='**{} just gained a level{}!**'.format(name, server_identifier))
                 except:
@@ -3149,8 +3278,8 @@ class Leveler:
                 channel_id = self.settings["lvl_msg_lock"][server.id]
                 channel = find(lambda m: m.id == channel_id, server.channels)
 
-            server_identifier = ""  # super hacky
-            # name = self._is_mention(user) # also super hacky
+            server_identifier = "" # super hacky
+            #name = self._is_mention(user) # also super hacky
             # private message takes precedent, of course
             if "private_lvl_msg" in self.settings and server.id in self.settings["private_lvl_msg"]:
                 server_identifier = " on {}".format(server.name)
@@ -3160,7 +3289,7 @@ class Leveler:
             new_level = str(userinfo["servers"][server.id]["level"])
             # add to appropriate role if necessary
             try:
-                server_roles = db.roles.find_one({'server_id': server.id})
+                server_roles = db.roles.find_one({'server_id':server.id})
                 if server_roles != None:
                     for role in server_roles['roles'].keys():
                         if int(server_roles['roles'][role]['level']) == int(new_level):
@@ -3181,19 +3310,18 @@ class Leveler:
 
             # add appropriate badge if necessary
             try:
-                server_linked_badges = db.badgelinks.find_one({'server_id': server.id})
+                server_linked_badges = db.badgelinks.find_one({'server_id':server.id})
                 if server_linked_badges != None:
                     for badge_name in server_linked_badges['badges']:
                         if int(server_linked_badges['badges'][badge_name]) == int(new_level):
-                            server_badges = db.badges.find_one({'server_id': server.id})
+                            server_badges = db.badges.find_one({'server_id':server.id})
                             if server_badges != None and badge_name in server_badges['badges'].keys():
-                                userinfo_db = db.users.find_one({'user_id': user.id})
+                                userinfo_db = db.users.find_one({'user_id':user.id})
                                 new_badge_name = "{}_{}".format(badge_name, server.id)
                                 userinfo_db["badges"][new_badge_name] = server_badges['badges'][badge_name]
-                                db.users.update_one({'user_id': user.id}, {'$set': {"badges": userinfo_db["badges"]}})
+                                db.users.update_one({'user_id':user.id}, {'$set':{"badges": userinfo_db["badges"]}})
             except:
                 await self.bot.send_message(channel, 'Error. Badge was not given!')
-
 
     async def _find_server_rank(self, user, server):
         targetid = user.id
