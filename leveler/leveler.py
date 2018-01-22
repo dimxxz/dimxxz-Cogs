@@ -1497,7 +1497,7 @@ class Leveler:
                 "bg_img": bg_img,
                 "price": price,
                 "description": description,
-                "border_color": border_color,
+                #"border_color": border_color,
                 "server_id": serverid,
                 "server_name": servername,
                 "priority_num": 0
