@@ -7,7 +7,7 @@ If you need support for this cog, please visit stevy's github page.
 - Please keep that in mind when using this newer version!
 
 ----------------------------------------------------------------------------------------------
-Slightly modified and improved by me, dimxxz
+Modified and improved by me, dimxxz
 
 Changes that have been made:
 1. Rank Roles assignment issue fixed
@@ -19,6 +19,7 @@ Changes that have been made:
 7. Removed Badge border color
 8. Bot owner can give global badges to users
 9. Badge priority on profile fixed
+10. Rank Role assignment notification added
 
 
 Installation:
