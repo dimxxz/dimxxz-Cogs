@@ -18,6 +18,7 @@ Changes that have been made:
 6. Slight changes to the design/font
 7. Removed Badge border color
 8. Bot owner can give global badges to users
+9. Badge priority on profile fixed
 
 
 Installation:
