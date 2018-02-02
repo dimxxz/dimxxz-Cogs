@@ -178,6 +178,9 @@ class Marry:
             e = discord.Embed(description=msg, colour=discord.Colour.red())
             await self.bot.say(embed=e)
             return
+        if thing.startswith("<@"):
+            await self.bot.say("Nani? This command won't work with mentions or users. Please use **{}marry @user** instead!".format(ctx.prefix))
+            return
         times_married = 0
         for role in ctx.message.author.roles:
             if "♡" in role.name:
@@ -214,8 +217,8 @@ class Marry:
 
         marchan = discord.utils.find(lambda c: c.name == 'marriage', ctx.message.server.channels)
         if marchan:
-            msg = "You're now married, congratulations!"
-            msg2 = "{} married **{}** congratulations!".format(ctx.message.author.name, thing)
+            msg = "You're now married to **{}**, congratulations!".format(thing)
+            msg2 = "**{}** married **{}** congratulations!".format(ctx.message.author.name, thing)
             e = discord.Embed(description=msg, colour=discord.Colour.blue())
             e2 = discord.Embed(description=msg2, colour=discord.Colour.blue())
             await self.bot.say(embed=e)
@@ -223,14 +226,14 @@ class Marry:
         else:
             try:
                 marchan = await self.bot.create_channel(ctx.message.server, "marriage")
-                msg = "You're now married, congratulations!"
-                msg2 = "{} married **{}** congratulations!".format(ctx.message.author.name, thing)
+                msg = "You're now married to **{}**, congratulations!".format(thing)
+                msg2 = "**{}** married **{}** congratulations!".format(ctx.message.author.name, thing)
                 e = discord.Embed(description=msg, colour=discord.Colour.blue())
                 e2 = discord.Embed(description=msg2, colour=discord.Colour.blue())
                 await self.bot.say(embed=e)
                 await self.bot.send_message(marchan, embed=e2)
             except:
-                msg = "{} married **{}**, congratulations! I suggest telling the server owner or moderators to make a #marriage channel though.".format(ctx.message.author.name, thing)
+                msg = "**{}** married **{}**, congratulations! I suggest telling the server owner or moderators to make a #marriage channel though.".format(ctx.message.author.name, thing)
                 e = discord.Embed(description=msg, colour=discord.Colour.blue())
                 await self.bot.say(embed=e)
         return
