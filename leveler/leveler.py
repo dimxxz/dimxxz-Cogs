@@ -2004,20 +2004,20 @@ class Leveler:
 
     async def draw_profile(self, user, server):
         font_thin_file = 'data/leveler/fonts/Uni_Sans_Thin.ttf'
-        font_heavy_file = 'data/leveler/fonts/Uni_Sans_Heavy.ttf'
-        font_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf'
+        font_heavy_file = 'data/leveler/fonts/YasashisaAntique.ttf'
+        font_file = 'data/leveler/fonts/YasashisaAntique.ttf'
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
-        name_fnt = ImageFont.truetype(font_heavy_file, 22)
-        name_u_fnt = ImageFont.truetype(font_unicode_file, 30)
+        name_fnt = ImageFont.truetype(font_heavy_file, 24)
+        name_u_fnt = ImageFont.truetype(font_unicode_file, 22)
         title_fnt = ImageFont.truetype(font_heavy_file, 15)
-        title_u_fnt = ImageFont.truetype(font_unicode_file, 23)
+        title_u_fnt = ImageFont.truetype(font_unicode_file, 15)
         label_fnt = ImageFont.truetype(font_bold_file, 18)
         exp_fnt = ImageFont.truetype(font_bold_file, 13)
         large_fnt = ImageFont.truetype(font_thin_file, 33)
         rep_fnt = ImageFont.truetype(font_heavy_file, 26)
         rep_u_fnt = ImageFont.truetype(font_unicode_file, 25)
-        text_fnt = ImageFont.truetype(font_file, 14)
+        text_fnt = ImageFont.truetype(font_file, 13)
         text_u_fnt = ImageFont.truetype(font_unicode_file, 14)
         symbol_u_fnt = ImageFont.truetype(font_unicode_file, 15)
 
@@ -2168,7 +2168,7 @@ class Leveler:
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
         _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color)
-        draw.text((self._center(60, 50, rep_text, rep_fnt), 10), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
+        draw.text((self._center(60, 60, rep_text, rep_fnt), 6), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
 
         lvl_left = 100
         label_align = 362 # vertical
@@ -2599,11 +2599,11 @@ class Leveler:
     async def draw_rank(self, user, server):
         # fonts
         font_thin_file = 'data/leveler/fonts/Uni_Sans_Thin.ttf'
-        font_heavy_file = 'data/leveler/fonts/Uni_Sans_Heavy.ttf'
-        font_file = 'data/leveler/fonts/SourceSansPro-Regular.ttf'
+        font_heavy_file = 'data/leveler/fonts/YasashisaAntique.ttf'
+        font_file = 'data/leveler/fonts/YasashisaAntique.ttf'
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
-        name_fnt = ImageFont.truetype(font_heavy_file, 24)
+        name_fnt = ImageFont.truetype(font_heavy_file, 22)
         name_u_fnt = ImageFont.truetype(font_unicode_file, 24)
         label_fnt = ImageFont.truetype(font_bold_file, 16)
         exp_fnt = ImageFont.truetype(font_bold_file, 9)
