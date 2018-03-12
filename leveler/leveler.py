@@ -2167,8 +2167,8 @@ class Leveler:
 
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
-        _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, info_text_color)
-        draw.text((self._center(60, 60, rep_text, rep_fnt), 6), rep_text,  font=rep_fnt, fill=info_text_color) # Exp Text
+        _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, rep_fill)#info_text_color)
+        draw.text((self._center(60, 60, rep_text, rep_fnt), 6), rep_text,  font=rep_fnt, fill=rep_fill)#info_text_color) # Exp Text
 
         lvl_left = 100
         label_align = 362 # vertical
@@ -2218,7 +2218,7 @@ class Leveler:
             offset = 195
         margin = 140
         txt_color = self._contrast(info_fill, white_color, dark_color)
-        for line in textwrap.wrap(userinfo["info"], width=32):
+        for line in textwrap.wrap(userinfo["info"], width=29):
         # for line in textwrap.wrap('userinfo["info"]', width=200):
             # draw.text((margin, offset), line, font=text_fnt, fill=white_color)
             _write_unicode(line, margin, offset, text_fnt, text_u_fnt, txt_color)
