@@ -2204,7 +2204,14 @@ class Leveler:
         try:
             bank = self.bot.get_cog('Economy').bank
             if bank.account_exists(user):
-                credits = bank.get_balance(user)
+                #credits = bank.get_balance(user)
+                creditz = bank.get_balance(user)
+                if creditz > 10000:
+                    creditx = creditz / 1000.0
+                    creditx = '%.0f' % creditx
+                    credits = creditx + "k"
+                else:
+                    credits = creditz
             else:
                 credits = 0
         except:
@@ -2778,7 +2785,14 @@ class Leveler:
         try:
             bank = self.bot.get_cog('Economy').bank
             if bank.account_exists(user):
-                credits = bank.get_balance(user)
+                #credits = bank.get_balance(user)
+                creditz = bank.get_balance(user)
+                if creditz > 10000:
+                    creditx = creditz / 1000.0
+                    creditx = '%.0f' % creditx
+                    credits = creditx + "k"
+                else:
+                    credits = creditz
             else:
                 credits = 0
         except:
