@@ -42,7 +42,6 @@ bg_credits = {
 # directory
 user_directory = "data/leveler/users"
 
-prefix = fileIO("data/red/settings.json", "load")['PREFIXES']
 default_avatar_url = "http://i.imgur.com/XPDO9VH.jpg"
 
 try:
@@ -61,11 +60,15 @@ class Leveler:
         self.settings = fileIO("data/leveler/settings.json", "load")
         bot_settings = fileIO("data/red/settings.json", "load")
         self.owner = bot_settings["OWNER"]
+        self.session = aiohttp.ClientSession(loop=self.bot.loop)
         self.chid = fileIO("data/leveler/channels.json", "load")
 
         dbs = client.database_names()
         if 'leveler' not in dbs:
             self.pop_database()
+
+    def __unload(self):
+        self.session.close()
 
     def pop_database(self):
         if os.path.exists("data/leveler/users"):
@@ -719,7 +722,7 @@ class Leveler:
         await self.bot.say("**{}**".format(random.choice(phrases)))
         clusters = 10
 
-        async with aiohttp.get(url) as r:
+        async with self.session.get(url) as r:
             image = await r.content.read()
         with open('data/leveler/temp_auto.png','wb') as f:
             f.write(image)
@@ -823,7 +826,7 @@ class Leveler:
                 db.users.update_one({'user_id':user.id}, {'$set':{"levelup_background": self.backgrounds["levelup"][image_name]}})
                 await self.bot.say("**Your new level-up background has been succesfully set!**")
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds levelup`".format(prefix[0]))
+            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds levelup`".format(ctx.prefix]))
 
     @profileset.command(name = "bg", pass_context=True, no_pm=True)
     async def profilebg(self, ctx, *, image_name:str):
@@ -848,7 +851,7 @@ class Leveler:
                 db.users.update_one({'user_id':user.id}, {'$set':{"profile_background": self.backgrounds["profile"][image_name]}})
                 await self.bot.say("**Your new profile background has been succesfully set!**")
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds profile`".format(prefix[0]))
+            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds profile`".format(ctx.prefix))
 
     @rankset.command(name = "bg", pass_context=True, no_pm=True)
     async def rankbg(self, ctx, *, image_name:str):
@@ -873,7 +876,7 @@ class Leveler:
                 db.users.update_one({'user_id':user.id}, {'$set':{"rank_background": self.backgrounds["rank"][image_name]}})
                 await self.bot.say("**Your new rank background has been succesfully set!**")
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds rank`".format(prefix[0]))
+            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds rank`".format(ctx.prefix))
 
     @profileset.command(pass_context=True, no_pm=True)
     async def title(self, ctx, *, title):
@@ -1135,7 +1138,7 @@ class Leveler:
         max_byte = 1000
 
         try:
-            async with aiohttp.get(url) as r:
+            async with self.session.get(url) as r:
                 image = await r.content.read()
             with open('data/leveler/test.png','wb') as f:
                 f.write(image)
@@ -1405,9 +1408,9 @@ class Leveler:
                 else:
                     await self.bot.say('**{}, you already have this badge!**'.format(user.name))
             else:
-                await self.bot.say('**The badge `{}` does not exist. (try `{}badge available`)**'.format(name, prefix[0]))
+                await self.bot.say('**The badge `{}` does not exist. (try `{}badge available`)**'.format(name, ctx.prefix))
         else:
-            await self.bot.say('**There are no badges to get! (try `{}badge get [name] -global`).**'.format(prefix[0]))
+            await self.bot.say('**There are no badges to get! (try `{}badge get [name] -global`).**'.format(ctx.prefix))
 
     @badge.command(name="set", pass_context=True, no_pm=True)
     async def set(self, ctx, name:str, priority_num:int):
@@ -2042,7 +2045,7 @@ class Leveler:
         white_color = (240,240,240,255)
         light_color = (160,160,160,255)
         if "rep_color" not in userinfo.keys() or not userinfo["rep_color"]:
-            rep_fill = (92,130,203,230)
+            rep_fill = (255,255,255,230)
         else:
             rep_fill = tuple(userinfo["rep_color"])
         # determines badge section color, should be behind the titlebar
@@ -2068,15 +2071,15 @@ class Leveler:
         bg_image = Image
         profile_image = Image
 
-        async with aiohttp.get(bg_url) as r:
+        async with self.session.get(bg_url) as r:
             image = await r.content.read()
         with open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id),'wb') as f:
             f.write(image)
         try:
-            async with aiohttp.get(profile_url) as r:
+            async with self.session.get(profile_url) as r:
                 image = await r.content.read()
         except:
-            async with aiohttp.get(default_avatar_url) as r:
+            async with self.session.get(default_avatar_url) as r:
                 image = await r.content.read()
         with open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id),'wb') as f:
             f.write(image)
@@ -2274,7 +2277,7 @@ class Leveler:
                     # determine image or color for badge bg
                     if await self._valid_image_url(bg_color):
                         # get image
-                        async with aiohttp.get(bg_color) as r:
+                        async with self.session.get(bg_color) as r:
                             image = await r.content.read()
                         with open('data/leveler/temp/{}_temp_badge.png'.format(user.id),'wb') as f:
                             f.write(image)
@@ -2639,23 +2642,23 @@ class Leveler:
         bg_image = Image
         profile_image = Image
 
-        async with aiohttp.get(bg_url) as r:
+        async with self.session.get(bg_url) as r:
             image = await r.content.read()
         with open('data/leveler/temp/test_temp_rank_bg.png'.format(user.id),'wb') as f:
             f.write(image)
         try:
-            async with aiohttp.get(profile_url) as r:
+            async with self.session.get(profile_url) as r:
                 image = await r.content.read()
         except:
-            async with aiohttp.get(default_avatar_url) as r:
+            async with self.session.get(default_avatar_url) as r:
                 image = await r.content.read()
         with open('data/leveler/temp/test_temp_rank_profile.png'.format(user.id),'wb') as f:
             f.write(image)
         try:
-            async with aiohttp.get(server_icon_url) as r:
+            async with self.session.get(server_icon_url) as r:
                 image = await r.content.read()
         except:
-            async with aiohttp.get(default_avatar_url) as r:
+            async with self.session.get(default_avatar_url) as r:
                 image = await r.content.read()
         with open('data/leveler/temp/test_temp_server_icon.png'.format(user.id),'wb') as f:
             f.write(image)
@@ -2939,15 +2942,15 @@ class Leveler:
         bg_image = Image
         profile_image = Image
 
-        async with aiohttp.get(bg_url) as r:
+        async with self.session.get(bg_url) as r:
             image = await r.content.read()
         with open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id),'wb') as f:
             f.write(image)
         try:
-            async with aiohttp.get(profile_url) as r:
+            async with self.session.get(profile_url) as r:
                 image = await r.content.read()
         except:
-            async with aiohttp.get(default_avatar_url) as r:
+            async with self.session.get(default_avatar_url) as r:
                 image = await r.content.read()
         with open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id),'wb') as f:
             f.write(image)
