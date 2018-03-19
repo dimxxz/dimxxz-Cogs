@@ -826,7 +826,7 @@ class Leveler:
                 db.users.update_one({'user_id':user.id}, {'$set':{"levelup_background": self.backgrounds["levelup"][image_name]}})
                 await self.bot.say("**Your new level-up background has been succesfully set!**")
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds levelup`".format(ctx.prefix]))
+            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds levelup`".format(ctx.prefix))
 
     @profileset.command(name = "bg", pass_context=True, no_pm=True)
     async def profilebg(self, ctx, *, image_name:str):
