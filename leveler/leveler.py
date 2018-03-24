@@ -2066,7 +2066,7 @@ class Leveler:
         if badge_fill == (128,151,165,230):
             level_fill = white_color
         else:
-            level_fill = self._contrast(exp_fill, rep_fill, badge_fill)
+            level_fill = self._contrast(exp_fill, info_fill, badge_fill)
 
         # create image objects
         bg_image = Image
