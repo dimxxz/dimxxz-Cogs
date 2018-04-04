@@ -9,7 +9,32 @@ If you need support for this cog, please visit stevy's github page.
 ----------------------------------------------------------------------------------------------
 Modified and improved by me, dimxxz
 
-Changes that have been made:
+
+----------------------------------------------------------------------------------------------
+Major update 04.04.2018:
+
+removed commands:
+- backgrounds, addprofilebg, delprofilebg, addrankbg, delrankbg, addlevelbg, dellevelbg
+
+added commands:
++ lvlshop, lvlshop list, lvlshop buy, lvlshop add, lvlshop del, lvlshop inv, lvlshop give
+
+
+----------------------------------------------------------------------------------------------
+IMPORTANT!:
+Previous background settings won't work with this update.
+backgrounds.json file will be created by default but not used by leveler at all!
+Completely disposed the usage of backgrounds.json!
+You will need to set up all backgrounds again since lvlshop is ported to mongodb completely.
+Use the default backgrounds from the backgrounds.json in data/leveler if needed.
+
+lvlshop allows you to set the price for each background.
+Purchased backgrounds will be applied to the buyer's account.
+Background switching still functions with the profileset, rankset and levelupset commands.
+----------------------------------------------------------------------------------------------
+
+
+Old but still included features:
 1. Rank Roles assignment issue fixed
 2. Rank Roles can now be assigned with Level-up Message turned off
 3. Bot's own commands give 0 exp
