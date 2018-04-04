@@ -27,7 +27,7 @@ import time
 
 __author__ = "stevy"
 # written by stevy https://github.com/AznStevy/Maybe-Useful-Cogs
-# slightly modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
+# Modified by dimxxz https://github.com/dimxxz/dimxxz-Cogs
 
 # fonts
 font_file = 'data/leveler/fonts/font.ttf'
@@ -56,7 +56,7 @@ class Leveler:
 
     def __init__(self, bot):
         self.bot = bot
-        self.backgrounds = fileIO("data/leveler/backgrounds.json", "load")
+        #self.backgrounds = fileIO("data/leveler/backgrounds.json", "load")
         self.badges = fileIO("data/leveler/badges.json", "load")
         self.settings = fileIO("data/leveler/settings.json", "load")
         bot_settings = fileIO("data/red/settings.json", "load")
@@ -479,7 +479,7 @@ class Leveler:
 
         section = section.lower()
         default_info_color = (30, 30 ,30, 200)
-        white_info_color = (150, 150, 150, 180)
+        white_info_color = (255, 255, 255, 255)
         default_rep = (92,130,203,230)
         default_badge = (128,151,165,230)
         default_exp = (255, 255, 255, 230)
@@ -587,7 +587,7 @@ class Leveler:
 
         section = section.lower()
         default_info_color = (30, 30 ,30, 200)
-        white_info_color = (150, 150, 150, 180)
+        white_info_color = (255, 255, 255, 255)
         default_exp = (255, 255, 255, 230)
         default_a = 200
 
@@ -673,7 +673,7 @@ class Leveler:
 
         section = section.lower()
         default_info_color = (30, 30 ,30, 200)
-        white_info_color = (150, 150, 150, 180)
+        white_info_color = (255, 255, 255, 255)
         default_a = 200
 
         if server.id in self.settings["disabled_servers"]:
@@ -814,20 +814,23 @@ class Leveler:
         userinfo = db.users.find_one({'user_id':user.id})
 
         if server.id in self.settings["disabled_servers"]:
-            await self.bot.say("Leveler commands for this server are disabled.")
+            await self.bot.say("Leveler commands for this server are disabled!")
             return
 
         if "text_only" in self.settings and server.id in self.settings["text_only"]:
-            await self.bot.say("**Text-only commands allowed.**")
+            await self.bot.say("Text-only commands allowed!")
             return
 
-
-        if image_name in self.backgrounds["levelup"].keys():
-            if await self._process_purchase(ctx):
-                db.users.update_one({'user_id':user.id}, {'$set':{"levelup_background": self.backgrounds["levelup"][image_name]}})
-                await self.bot.say("**Your new level-up background has been succesfully set!**")
+        for bg in userinfo['lvlbackgrounds']:
+            uinfo = userinfo['lvlbackgrounds'][bg]
+            if uinfo['background_name'] == image_name:
+                db.users.update_one({'user_id': userinfo['user_id']}, {'$set': {
+                    "levelup_background": uinfo['bg_img'],
+                }})
+                await self.bot.say("Background **{}** successfully set!".format(uinfo['background_name']))
+                break
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds levelup`".format(ctx.prefix))
+            await self.bot.say("You don't own that background!")
 
     @profileset.command(name = "bg", pass_context=True, no_pm=True)
     async def profilebg(self, ctx, *, image_name:str):
@@ -839,20 +842,23 @@ class Leveler:
         userinfo = db.users.find_one({'user_id':user.id})
 
         if server.id in self.settings["disabled_servers"]:
-            await self.bot.say("Leveler commands for this server are disabled.")
+            await self.bot.say("Leveler commands for this server are disabled!")
             return
 
         if "text_only" in self.settings and server.id in self.settings["text_only"]:
-            await self.bot.say("**Text-only commands allowed.**")
+            await self.bot.say("Text-only commands allowed!")
             return
 
-
-        if image_name in self.backgrounds["profile"].keys():
-            if await self._process_purchase(ctx):
-                db.users.update_one({'user_id':user.id}, {'$set':{"profile_background": self.backgrounds["profile"][image_name]}})
-                await self.bot.say("**Your new profile background has been succesfully set!**")
+        for bg in userinfo['backgrounds']:
+            uinfo = userinfo['backgrounds'][bg]
+            if uinfo['background_name'] == image_name:
+                db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
+                    "profile_background":uinfo['bg_img'],
+                    }})
+                await self.bot.say("Background **{}** successfully set!".format(uinfo['background_name']))
+                break
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds profile`".format(ctx.prefix))
+            await self.bot.say("You don't own that background!")
 
     @rankset.command(name = "bg", pass_context=True, no_pm=True)
     async def rankbg(self, ctx, *, image_name:str):
@@ -864,20 +870,23 @@ class Leveler:
         userinfo = db.users.find_one({'user_id':user.id})
 
         if server.id in self.settings["disabled_servers"]:
-            await self.bot.say("Leveler commands for this server are disabled.")
+            await self.bot.say("Leveler commands for this server are disabled!")
             return
 
         if "text_only" in self.settings and server.id in self.settings["text_only"]:
-            await self.bot.say("**Text-only commands allowed.**")
+            await self.bot.say("Text-only commands allowed!")
             return
 
-
-        if image_name in self.backgrounds["rank"].keys():
-            if await self._process_purchase(ctx):
-                db.users.update_one({'user_id':user.id}, {'$set':{"rank_background": self.backgrounds["rank"][image_name]}})
-                await self.bot.say("**Your new rank background has been succesfully set!**")
+        for bg in userinfo['rankbackgrounds']:
+            uinfo = userinfo['rankbackgrounds'][bg]
+            if uinfo['background_name'] == image_name:
+                db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
+                    "rank_background":uinfo['bg_img'],
+                    }})
+                await self.bot.say("Background **{}** successfully set!".format(uinfo['background_name']))
+                break
         else:
-            await self.bot.say("That is not a valid bg. See available bgs at `{}backgrounds rank`".format(ctx.prefix))
+            await self.bot.say("You don't own that background!")
 
     @profileset.command(pass_context=True, no_pm=True)
     async def title(self, ctx, *, title):
@@ -1854,157 +1863,494 @@ class Leveler:
             return
 
     @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def addprofilebg(self, name:str, url:str):
-        """Add a profile background. Proportions: (290px x 290px)"""
-        if name in self.backgrounds["profile"].keys():
-            await self.bot.say("**That profile background name already exists!**")
-        elif not await self._valid_image_url(url):
-            await self.bot.say("**That is not a valid image url!**")
-        else:
-            self.backgrounds["profile"][name] = url
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**New profile background(`{}`) added.**".format(name))
-
-    @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def addrankbg(self, name:str, url:str):
-        """Add a rank background. Proportions: (360px x 100px)"""
-        if name in self.backgrounds["rank"].keys():
-            await self.bot.say("**That rank background name already exists!**")
-        elif not await self._valid_image_url(url):
-            await self.bot.say("**That is not a valid image url!**")
-        else:
-            self.backgrounds["rank"][name] = url
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**New rank background(`{}`) added.**".format(name))
-
-    @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def addlevelbg(self, name:str, url:str):
-        '''Add a level-up background. Proportions: (85px x 105px)'''
-        if name in self.backgrounds["levelup"].keys():
-            await self.bot.say("**That level-up background name already exists!**")
-        elif not await self._valid_image_url(url):
-            await self.bot.say("**That is not a valid image url!**")
-        else:
-            self.backgrounds["levelup"][name] = url
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**New level-up background(`{}`) added.**".format(name))
-
-    @checks.is_owner()
-    @lvladminbg.command(no_pm=True, pass_context=True)
+    @lvladminbg.command(name="custom", no_pm=True, pass_context=True)
     async def setcustombg(self, ctx, bg_type:str, user_id:str, img_url:str):
         """Set one-time custom background"""
         valid_types = ['profile', 'rank', 'levelup']
         type_input = bg_type.lower()
 
         if type_input not in valid_types:
-            await self.bot.say('**Please choose a valid type: `profile`, `rank`, `levelup`.')
+            await self.bot.say('Please choose a valid type: `profile`, `rank`, `levelup`.')
             return
 
+        userinfo = db.users.find_one({'user_id': user_id})
+        if type_input == "profile":
+            userinfox = 'backgrounds'
+        elif type_input == "rank":
+            userinfox = 'rankbackgrounds'
+        elif type_input == "levelup":
+            userinfox = 'lvlbackgrounds'
+
         # test if valid user_id
-        userinfo = db.users.find_one({'user_id':user_id})
         if not userinfo:
-            await self.bot.say("**That is not a valid user id!**")
+            await self.bot.say("That is not a valid user id!")
             return
 
         if not await self._valid_image_url(img_url):
-            await self.bot.say("**That is not a valid image url!**")
+            await self.bot.say("That is not a valid image url!")
             return
 
+        def_bg = {
+                "background_name": "custom",
+                "bg_img": img_url,
+                "price": 0,
+            }
+        db.users.update_one({'user_id': user_id}, {'$set': {
+                    userinfox + ".custom": def_bg,
+                }}, upsert=True)
         db.users.update_one({'user_id':user_id}, {'$set':{"{}_background".format(type_input): img_url}})
-        await self.bot.say("**User {} custom {} background set.**".format(user_id, bg_type))
+        await self.bot.say("User {} custom {} background set.".format(user_id, bg_type))
 
+
+    @commands.group(pass_context=True, no_pm=True)
+    async def lvlshop(self, ctx):
+        if ctx.invoked_subcommand is None:
+            await send_cmd_help(ctx)
+            return
+
+    @lvlshop.command(name="buy", pass_context=True, no_pm=True)
+    async def _lvlbuy(self, ctx, type:str, *, name:str):
+        """Buy Backgrounds from the shop"""
+        user = ctx.message.author
+        server = ctx.message.server
+        serverid = 'global'
+        await self._create_user(user, server)
+        userinfo = db.users.find_one({'user_id':user.id})
+        userinfo = self._bg_convert_dict(userinfo)
+        server_bg_info = db.backgrounds.find_one({'server_id':serverid})
+
+        if server_bg_info:
+            if type.lower() == "profile":
+                server_bgs = server_bg_info['backgrounds']
+                userinfox = userinfo['backgrounds']
+                bgx = "backgrounds"
+            elif type.lower() == "rank":
+                server_bgs = server_bg_info['rankbackgrounds']
+                userinfox = userinfo['rankbackgrounds']
+                bgx = "rankbackgrounds"
+            elif type.lower() == "levelup":
+                server_bgs = server_bg_info['lvlbackgrounds']
+                userinfox = userinfo['lvlbackgrounds']
+                bgx = "lvlbackgrounds"
+            else:
+                await self.bot.say("{}lvlshop buy <type> <bg_name>\n"
+                                   "type = profile, rank, levelup".format(ctx.prefix))
+                return
+
+            if name in server_bgs:
+                if "{}".format(name) not in userinfox.keys():
+                    bg_info = server_bgs[name]
+                    if bg_info['price'] == -1:
+                        await self.bot.say('That background is not purchasable!')
+                    elif bg_info['price'] == 0:
+                        userinfox["{}".format(name)] = server_bgs[name]
+                        db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
+                            bgx:userinfox,
+                            }})
+                        await self.bot.say('**{}** has been purchased!'.format(name))
+                    else:
+                        # use the economy cog
+                        bank = self.bot.get_cog('Economy').bank
+                        await self.bot.say('**{}**, you are about to buy the background **{}** for **{} credits**. Confirm by typing *"yes"*'.format(self._is_mention(user), name, bg_info['price']))
+                        answer = await self.bot.wait_for_message(timeout=15, author=user)
+                        if answer is None:
+                            await self.bot.say('Purchase canceled!')
+                            return
+                        elif "yes" not in answer.content.lower():
+                            await self.bot.say('Background not purchased!')
+                            return
+                        else:
+                            if bank.account_exists(user) and bg_info['price'] <= bank.get_balance(user):
+                                bank.withdraw_credits(user, bg_info['price'])
+                                userinfox["{}".format(name)] = server_bgs[name]
+                                db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
+                                    bgx:userinfox,
+                                    }})
+                                await self.bot.say('You have bought the background **{}** for **{} credits**!'.format(name, bg_info['price']))
+                            elif bank.account_exists(user) and bank.get_balance(user) < bg_info['price']:
+                                await self.bot.say('Not enough credits! Need **{} credits** more!'.format(bg_info['price'] - bank.get_balance(user)))
+                            else:
+                                await self.bot.say('You don\'t have a bank account. Please use **{}bank register**'.format(prefix))
+                else:
+                    await self.bot.say('**{}**, you already have this background!'.format(user.name))
+            else:
+                await self.bot.say('The background **{}** does not exist. (try **{}lvlshop list**)'.format(name, ctx.prefix))
+
+
+    @lvlshop.command(name="add", pass_context=True, no_pm=True)
     @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def delprofilebg(self, name:str):
-        '''Delete a profile background.'''
-        if name in self.backgrounds["profile"].keys():
-            del self.backgrounds["profile"][name]
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**The profile background(`{}`) has been deleted.**".format(name))
-        else:
-            await self.bot.say("**That profile background name doesn't exist.**")
+    async def _lvlshadd(self, ctx, type:str, bg_img:str, price:int, *, name:str):
+        """Add Backgrounds to the shop"""
+        user = ctx.message.author
+        server = ctx.message.server
 
+        serverid = 'global'
+        servername = 'global'
+
+        if '.' in name:
+            await self.bot.say("Name can't contain `.`")
+            return
+
+        if not await self._valid_image_url(bg_img):
+            await self.bot.say("Invalid Background. Enter hex or image url!")
+            return
+
+        if price < -1:
+            await self.bot.say("Price is not valid!")
+            return
+
+        bgs = db.backgrounds.find_one({'server_id':serverid})
+
+        new_bg = {
+                "background_name": name,
+                "bg_img": bg_img,
+                "price": price,
+            }
+
+        if type.lower() == "profile":
+            xbgs = bgs['backgrounds']
+            xbg = "backgrounds"
+            def_imgx = "http://i.imgur.com/8T1FUP5.jpg"
+        elif type.lower() == "rank":
+            xbgs = bgs['rankbackgrounds']
+            xbg = "rankbackgrounds"
+            def_imgx = "http://i.imgur.com/SorwIrc.jpg"
+        elif type.lower() == "levelup":
+            xbgs = bgs['lvlbackgrounds']
+            xbg = "lvlbackgrounds"
+            def_imgx = "http://i.imgur.com/eEFfKqa.jpg"
+        else:
+            await self.bot.say("{}lvlshop add <type> <link> <price> <bg_name>\n"
+                               "type = profile, rank, levelup".format(ctx.prefix))
+            return
+
+        if name not in xbgs.keys():
+            # create the background regardless
+            xbgs[name] = new_bg
+            db.backgrounds.update_one({'server_id':serverid}, {'$set': {
+                xbg: xbgs
+                }})
+            await self.bot.say("Profile background **{}** has been added!".format(name))
+        else:
+            # update background in the server
+            xbgs[name] = new_bg
+            db.backgrounds.update_one({'server_id':serverid}, {'$set': {
+                xbg: xbgs
+                }})
+
+            # go through all users and update the background. Doing it this way because dynamic does more accesses when doing profile
+            for user in db.users.find({}):
+                try:
+                    if type.lower() == "profile":
+                        xuser = user['backgrounds']
+                    elif type.lower() == "rank":
+                        xuser = user['rankbackgrounds']
+                    elif type.lower() == "levelup":
+                        xuser = user['lvlbackgrounds']
+                    user = self._bg_convert_dict(user)
+                    userbgs = xuser
+                    bg_name = "{}".format(name)
+                    if bg_name in userbgs.keys():
+                        userbgs[bg_name] = new_bg
+                        db.users.update_one({'user_id':user['user_id']}, {'$set': {
+                            xbg: userbgs
+                            }})
+                except:
+                    pass
+            await self.bot.say("Profile background **{}** has been updated!".format(name))
+
+        if "default" not in xbgs.keys():
+            def_bg = {
+                "background_name": "default",
+                "bg_img": def_imgx,
+                "price": 0,
+            }
+            xbgs["default"] = def_bg
+            db.backgrounds.update_one({'server_id': serverid}, {'$set': {
+                xbg: xbgs
+            }})
+            for user in db.users.find({}):
+                try:
+                    if type == "profile":
+                        xuser = user['backgrounds']
+                    elif type == "rank":
+                        xuser = user['rankbackgrounds']
+                    elif type == "levelup":
+                        xuser = user['lvlbackgrounds']
+                    user = self._bg_convert_dict(user)
+                    userbgs = xuser
+                    bg_name = "default"
+                    if bg_name in userbgs.keys():
+                        userbgs[bg_name] = new_bg
+                        db.users.update_one({'user_id':user['user_id']}, {'$set': {
+                            xbg: userbgs
+                            }})
+                except:
+                    pass
+
+    @lvlshop.command(name="del", pass_context=True, no_pm=True)
     @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def delrankbg(self, name:str):
-        '''Delete a rank background.'''
-        if name in self.backgrounds["rank"].keys():
-            del self.backgrounds["rank"][name]
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**The rank background(`{}`) has been deleted.**".format(name))
-        else:
-            await self.bot.say("**That rank background name doesn't exist.**")
+    async def _lvlshdel(self, ctx, type:str, *, name:str):
+        """Remove backgrounds from the shop"""
+        user = ctx.message.author
+        channel = ctx.message.channel
+        server = user.server
 
+        #return
+        serverid = 'global'
+        servername = 'global'
+
+        # creates user if doesn't exist
+        await self._create_user(user, server)
+        userinfo = db.users.find_one({'user_id':user.id})
+        userinfo = self._bg_convert_dict(userinfo)
+
+        if server.id in self.settings["disabled_servers"]:
+            await self.bot.say("Leveler commands for this server are disabled!")
+            return
+
+        if not type:
+            await self.bot.say("{}lvlshop del <type> <link> <price> <bg_name>\n"
+                               "type = profile, rank, levelup".format(ctx.prefix))
+            return
+
+        bgs = db.backgrounds.find_one({'server_id':serverid})
+
+        if type.lower() == "profile":
+            xbgs = bgs['backgrounds']
+            xbg = "backgrounds"
+        elif type.lower() == "rank":
+            xbgs = bgs['rankbackgrounds']
+            xbg = "rankbackgrounds"
+        elif type.lower() == "levelup":
+            xbgs = bgs['lvlbackgrounds']
+            xbg = "lvlbackgrounds"
+        else:
+            await self.bot.say(("{}lvlshop del <type> <link> <price> <bg_name>\n"
+                                "type = profile, rank, levelup".format(ctx.prefix)))
+            return
+
+        if name in xbgs.keys():
+            del xbgs[name]
+            db.backgrounds.update_one({'server_id':bgs['server_id']}, {'$set':{
+                xbg:xbgs,
+                }})
+
+            for user_info_temp in db.users.find({}):
+                if type.lower() == "profile":
+                    xuser = user_info_temp['backgrounds']
+                elif type.lower() == "rank":
+                    xuser = user_info_temp['rankbackgrounds']
+                elif type.lower() == "levelup":
+                    xuser = user_info_temp['lvlbackgrounds']
+                try:
+                    user_info_temp = self._bg_convert_dict(user_info_temp)
+
+                    bg_name = "{}".format(name)
+                    if bg_name in xuser.keys():
+                        del xuser[bg_name]
+                        db.users.update_one({'user_id':user_info_temp['user_id']}, {'$set':{
+                            xbg:xuser,
+                            }})
+                except:
+                    pass
+
+            await self.bot.say("Background **{}** has been removed!".format(name))
+        else:
+            await self.bot.say("That background does not exist!")
+
+    @lvlshop.command(name="give", pass_context=True, no_pm=True)
     @checks.is_owner()
-    @lvladminbg.command(no_pm=True)
-    async def dellevelbg(self, name:str):
-        '''Delete a level background.'''
-        if name in self.backgrounds["levelup"].keys():
-            del self.backgrounds["levelup"][name]
-            fileIO('data/leveler/backgrounds.json', "save", self.backgrounds)
-            await self.bot.say("**The level-up background(`{}`) has been deleted.**".format(name))
-        else:
-            await self.bot.say("**That level-up background name doesn't exist.**")
+    async def _lvlshgive(self, ctx, type:str, user : discord.Member, *, name: str):
+        """Give background to users for free"""
+        org_user = ctx.message.author
+        server = org_user.server
+        # creates user if doesn't exist
+        await self._create_user(user, server)
+        userinfo = db.users.find_one({'user_id':user.id})
+        userinfo = self._bg_convert_dict(userinfo)
 
-    @commands.command(name = 'backgrounds', pass_context=True, no_pm=True)
-    async def disp_backgrounds(self, ctx, type:str = None):
-        '''Gives a list of backgrounds. [p]backgrounds [profile|rank|levelup]'''
+        if server.id in self.settings["disabled_servers"]:
+            await self.bot.say("Leveler commands for this server are disabled!")
+            return
+
+        serverid = 'global'
+        servername = 'global'
+
+        bgs = db.backgrounds.find_one({'server_id':serverid})
+
+        if type.lower() == "profile":
+            xbgs = bgs['backgrounds']
+            xbg = "backgrounds"
+            xuser = userinfo['backgrounds']
+        elif type.lower() == "rank":
+            xbgs = bgs['rankbackgrounds']
+            xbg = "rankbackgrounds"
+            xuser = userinfo['rankbackgrounds']
+        elif type.lower() == "levelup":
+            xbgs = bgs['lvlbackgrounds']
+            xbg = "lvlbackgrounds"
+            xuser = userinfo['lvlbackgrounds']
+
+
+        bg_name = "{}".format(name)
+
+        if name not in xbgs:
+            message = ("That background doesn't exist!")
+            await self.bot.say("That background doesn't exist!")
+            return
+        elif bg_name in xuser.keys():
+            await self.bot.say("**{}** already owns that background!".format(self._is_mention(user)))
+            return
+        else:
+            xuser[bg_name] = xbgs[name]
+            db.users.update_one({'user_id':user.id}, {'$set':{xbg: xuser}})
+            await self.bot.say("**{}** has just given **{}** the background **{}**!"
+                               "".format(org_user.name, user.name, name))
+
+
+    @lvlshop.command(name="inv", pass_context=True, no_pm=True)
+    async def _lvlinv(self, ctx, user: discord.Member = None):
+        """Shows purchased backgrounds."""
+        if user == None:
+            user = ctx.message.author
+        server = ctx.message.server
+        await self._create_user(user, server)
+        userinfo = db.users.find_one({'user_id': user.id})
+
+        # sort
+        listbgs = []
+        listrbgs = []
+        listlbgs = []
+
+        for bgname in userinfo['backgrounds'].keys():
+            bg = userinfo['backgrounds'][bgname]
+            listbgs.append((bg))
+
+        for rbgname in userinfo['rankbackgrounds'].keys():
+            rbg = userinfo['rankbackgrounds'][rbgname]
+            listrbgs.append((rbg))
+
+        for lbgname in userinfo['lvlbackgrounds'].keys():
+            lbg = userinfo['lvlbackgrounds'][lbgname]
+            listlbgs.append((lbg))
+
+        bg_ranks = ""
+        counter = 1
+        for bg in listbgs:
+            bg_ranks += "{}\n".format(bg['background_name'])
+            counter += 1
+        if not bg_ranks:
+            bg_ranks = "None\n"
+
+        rbg_ranks = ""
+        rcounter = 1
+        for rbg in listrbgs:
+            rbg_ranks += "{}\n".format(rbg['background_name'])
+            rcounter += 1
+        if not rbg_ranks:
+            rbg_ranks = "None\n"
+
+        lbg_ranks = ""
+        lcounter = 1
+        for lbg in listlbgs:
+            lbg_ranks += "{}\n".format(lbg['background_name'])
+            lcounter += 1
+        if not lbg_ranks:
+            lbg_ranks = "None\n"
+
+        em = discord.Embed(description='', colour=user.colour)
+
+        bgx_ranks = bg_ranks + rbg_ranks + lbg_ranks
+
+        total_pages = 0
+        for page in pagify(bgx_ranks, ["\n"]):
+            total_pages += 1
+
+        counter = 1
+        for page in pagify(bg_ranks, ["\n"]):
+            em.description = u'\u2063\n' + "**Profile:**\n{}\n**Rank:**\n{}\n**Levelup:**\n{}".format(bg_ranks, rbg_ranks, lbg_ranks)#page
+            em.set_author(name="Backgrounds for {}".format(user.name), icon_url=user.avatar_url)
+            em.set_footer(text="Page {} of {}".format(counter, total_pages))
+            await self.bot.say(embed=em)
+            counter += 1
+
+    @lvlshop.command(name = 'list', pass_context=True, no_pm=True)
+    async def _lvlshbgs(self, ctx, type:str = None):
+        """Lists backgrounds from the shop"""
         server = ctx.message.server
         user = ctx.message.author
         max_all = 18
+        await self._create_user(user, server)
+        userinfo = db.users.find_one({'user_id': user.id})
+        serverid = "global"
+        bginfo = db.backgrounds.find_one({'server_id': serverid})
 
         if server.id in self.settings["disabled_servers"]:
-            await self.bot.say("**Leveler commands for this server are disabled!**")
+            await self.bot.say("Leveler commands for this server are disabled!")
+            return
+
+        if not type:
+            await self.bot.say("Invalid Background Type. (profile, rank, levelup)\n{}lvlshop list profile".format(ctx.prefix))
             return
 
         em = discord.Embed(description='', colour=user.colour)
-        if not type:
-            em.set_author(name="All Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
-
-            for category in self.backgrounds.keys():
-                bg_url = []
-                for background_name in sorted(self.backgrounds[category].keys()):
-                    bg_url.append("[{}]({})".format(background_name, self.backgrounds[category][background_name]))
-                max_bg = min(max_all, len(bg_url))
-                bgs = ", ".join(bg_url[0:max_bg])
-                if len(bg_url) >= max_all:
-                    bgs += "..."
-                em.add_field(name = category.upper(), value = bgs, inline = False)
-            await self.bot.say(embed = em)
+        if type.lower() == "profile":
+            em.set_author(name="Profile Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
+            xbgs = bginfo["backgrounds"]
+        elif type.lower() == "rank":
+            em.set_author(name="Rank Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
+            xbgs = bginfo["rankbackgrounds"]
+        elif type.lower() == "levelup":
+            em.set_author(name="Level Up Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
+            xbgs = bginfo["lvlbackgrounds"]
         else:
-            if type.lower() == "profile":
-                em.set_author(name="Profile Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
-                bg_key = "profile"
-            elif type.lower() == "rank":
-                em.set_author(name="Rank Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
-                bg_key = "rank"
-            elif type.lower() == "levelup":
-                em.set_author(name="Level Up Backgrounds for {}".format(self.bot.user.name), icon_url = self.bot.user.avatar_url)
-                bg_key = "levelup"
-            else:
-                bg_key = None
+            await self.bot.say("Invalid Background Type. (profile, rank, levelup)\n{}lvlshop list profile".format(ctx.prefix))
+            return
 
-            if bg_key:
-                bg_url = []
-                for background_name in sorted(self.backgrounds[bg_key].keys()):
-                    bg_url.append("[{}]({})".format(background_name, self.backgrounds[bg_key][background_name]))
-                bgs = ", ".join(bg_url)
+        bg_url = []
+        for bgname in xbgs.keys():
+            bg = xbgs[bgname]
+            bg_url.append("[{}]({})".format(bgname, bg["bg_img"]))
+        bg_url.remove("[{}]({})".format("default", xbgs["default"]["bg_img"]))
+        bg_url.sort()
+        bgs = "\n".join(bg_url)
 
-                total_pages = 0
-                for page in pagify(bgs, [" "]):
-                    total_pages +=1
+        total_pages = 0
+        for page in pagify(bgs):
+            total_pages +=1
 
-                counter = 1
-                for page in pagify(bgs, [" "]):
-                    em.description = page
-                    em.set_footer(text = "Page {} of {}".format(counter, total_pages))
-                    await self.bot.say(embed = em)
-                    counter += 1
-            else:
-                await self.bot.say("**Invalid Background Type. (profile, rank, levelup)**")
+        counter = 1
+        for page in pagify(bgs):
+            em.description = page
+            em.set_footer(text = "Page {} of {}".format(counter, total_pages))
+            await self.bot.say(embed = em)
+            counter += 1
+
+
+    def _bg_convert_dict(self, userinfo):
+        if 'backgrounds' not in userinfo or not isinstance(userinfo['backgrounds'], dict):
+            def_bg = {
+                "background_name": "default",
+                "bg_img": "http://i.imgur.com/8T1FUP5.jpg",
+                "price": 0,
+            }
+            def_rbg = {
+                "background_name": "default",
+                "bg_img": "http://i.imgur.com/SorwIrc.jpg",
+                "price": 0,
+            }
+            def_lbg = {
+                "background_name": "default",
+                "bg_img": "http://i.imgur.com/eEFfKqa.jpg",
+                "price": 0,
+            }
+            db.users.update_one({'user_id': user.id}, {'$set': {
+                "backgrounds.default": def_bg,
+                "rankbackgrounds.default": def_rbg,
+                "lvlbackgrounds.default": def_lbg,
+            }}, upsert=True)
+        return db.users.find_one({'user_id': userinfo['user_id']})
 
     async def draw_profile(self, user, server):
         font_thin_file = 'data/leveler/fonts/Uni_Sans_Thin.ttf'
@@ -2090,9 +2436,10 @@ class Leveler:
             bg_image = Image.open('data/leveler/temp/{}_temp_profile_bg.png'.format(user.id)).convert('RGBA')
         except:
             image_name = "default"
-            # if image_name in self.backgrounds["profile"].keys():
-            db.users.update_one({'user_id': user.id},
-                                {'$set': {"profile_background": self.backgrounds["profile"][image_name]}})
+            uinfo = userinfo['backgrounds'][image_name]
+            db.users.update_one({'user_id': userinfo['user_id']}, {'$set': {
+                "profile_background": uinfo['bg_img'],
+            }})
             await self.bot.say("Profile Background has been reset to default! Please run the Profile command again!")
             return
         profile_image = Image.open('data/leveler/temp/{}_temp_profile_profile.png'.format(user.id)).convert('RGBA')
@@ -2229,7 +2576,7 @@ class Leveler:
             offset = 195
         margin = 140
         txt_color = self._contrast(info_fill, white_color, dark_color)
-        for line in textwrap.wrap(userinfo["info"], width=29):
+        for line in textwrap.wrap(userinfo["info"], width=26):
         # for line in textwrap.wrap('userinfo["info"]', width=200):
             # draw.text((margin, offset), line, font=text_fnt, fill=white_color)
             _write_unicode(line, margin, offset, text_fnt, text_u_fnt, txt_color)
@@ -2401,212 +2748,6 @@ class Leveler:
         back.paste(image, (imageLeft, imageTop))
         return back
 
-    """
-    async def draw_rank(self, user, server):
-        # fonts
-        name_fnt = ImageFont.truetype(font_bold_file, 22)
-        header_u_fnt = ImageFont.truetype(font_unicode_file, 18)
-        sub_header_fnt = ImageFont.truetype(font_bold_file, 14)
-        badge_fnt = ImageFont.truetype(font_bold_file, 12)
-        large_fnt = ImageFont.truetype(font_bold_file, 33)
-        level_label_fnt = ImageFont.truetype(font_bold_file, 22)
-        general_info_fnt = ImageFont.truetype(font_bold_file, 15)
-        general_info_u_fnt = ImageFont.truetype(font_unicode_file, 11)
-        credit_fnt = ImageFont.truetype(font_bold_file, 10)
-
-        def _write_unicode(text, init_x, y, font, unicode_font, fill):
-            write_pos = init_x
-
-            for char in text:
-                if char.isalnum() or char in string.punctuation or char in string.whitespace:
-                    draw.text((write_pos, y), char, font=font, fill=fill)
-                    write_pos += font.getsize(char)[0]
-                else:
-                    draw.text((write_pos, y), u"{}".format(char), font=unicode_font, fill=fill)
-                    write_pos += unicode_font.getsize(char)[0]
-
-        userinfo = db.users.find_one({'user_id':user.id})
-        # get urls
-        bg_url = userinfo["rank_background"]
-        profile_url = user.avatar_url
-        server_icon_url = server.icon_url
-
-        # create image objects
-        bg_image = Image
-        profile_image = Image
-
-        async with aiohttp.get(bg_url) as r:
-            image = await r.content.read()
-        with open('data/leveler/temp/{}_temp_rank_bg.png'.format(user.id),'wb') as f:
-            f.write(image)
-        try:
-            async with aiohttp.get(profile_url) as r:
-                image = await r.content.read()
-        except:
-            async with aiohttp.get(default_avatar_url) as r:
-                image = await r.content.read()
-        with open('data/leveler/temp/{}_temp_rank_profile.png'.format(user.id),'wb') as f:
-            f.write(image)
-        try:
-            async with aiohttp.get(server_icon_url) as r:
-                image = await r.content.read()
-        except:
-            async with aiohttp.get(default_avatar_url) as r:
-                image = await r.content.read()
-        with open('data/leveler/temp/{}_temp_server_icon.png'.format(user.id),'wb') as f:
-            f.write(image)
-
-        bg_image = Image.open('data/leveler/temp/{}_temp_rank_bg.png'.format(user.id)).convert('RGBA')
-        profile_image = Image.open('data/leveler/temp/{}_temp_rank_profile.png'.format(user.id)).convert('RGBA')
-        server_image = Image.open('data/leveler/temp/{}_temp_server_icon.png'.format(user.id)).convert('RGBA')
-
-        # set canvas
-        width = 360
-        height = 100
-        bg_color = (255,255,255, 0)
-        result = Image.new('RGBA', (width, height), bg_color)
-        process = Image.new('RGBA', (width, height), bg_color)
-
-        # puts in background
-        bg_image = bg_image.resize((width, height), Image.ANTIALIAS)
-        bg_image = bg_image.crop((0,0, width, height))
-        result.paste(bg_image, (0,0))
-
-        # draw
-        draw = ImageDraw.Draw(process)
-
-        # draw transparent overlay
-        vert_pos = 5
-        left_pos = 70
-        right_pos = width - vert_pos
-        title_height = 22
-        gap = 3
-
-        draw.rectangle([(left_pos - 20,vert_pos), (right_pos, vert_pos + title_height)], fill=(230,230,230,230)) # title box
-        content_top = vert_pos + title_height + gap
-        content_bottom = 100 - vert_pos
-
-        if "rank_info_color" in userinfo.keys():
-            info_color = tuple(userinfo["rank_info_color"])
-            info_color = (info_color[0], info_color[1], info_color[2], 160) # increase transparency
-        else:
-            info_color = (30, 30 ,30, 160)
-        draw.rectangle([(left_pos - 20, content_top), (right_pos, content_bottom)], fill=info_color, outline=(180, 180, 180, 180)) # content box
-
-        # stick in credits if needed
-        if bg_url in bg_credits.keys():
-            credit_text = " ".join("{}".format(bg_credits[bg_url]))
-            draw.text((2, 92), credit_text,  font=credit_fnt, fill=(0,0,0,190))
-
-        # draw level circle
-        multiplier = 6
-        lvl_circle_dia = 94
-        circle_left = 15
-        circle_top = int((height- lvl_circle_dia)/2)
-        raw_length = lvl_circle_dia * multiplier
-
-        # create mask
-        mask = Image.new('L', (raw_length, raw_length), 0)
-        draw_thumb = ImageDraw.Draw(mask)
-        draw_thumb.ellipse((0, 0) + (raw_length, raw_length), fill = 255, outline = 0)
-
-        # drawing level bar calculate angle
-        start_angle = -90 # from top instead of 3oclock
-        angle = int(360 * (userinfo["servers"][server.id]["current_exp"]/self._required_exp(userinfo["servers"][server.id]["level"]))) + start_angle
-
-        lvl_circle = Image.new("RGBA", (raw_length, raw_length))
-        draw_lvl_circle = ImageDraw.Draw(lvl_circle)
-        draw_lvl_circle.ellipse([0, 0, raw_length, raw_length], fill=(180, 180, 180, 180), outline = (255, 255, 255, 220))
-        # determines exp bar color
-        if "rank_exp_color" not in userinfo.keys() or not userinfo["rank_exp_color"]:
-            exp_fill = (255, 255, 255, 230)
-        else:
-            exp_fill = tuple(userinfo["rank_exp_color"])
-        draw_lvl_circle.pieslice([0, 0, raw_length, raw_length], start_angle, angle, fill=exp_fill, outline = (255, 255, 255, 230))
-        # put on level bar circle
-        lvl_circle = lvl_circle.resize((lvl_circle_dia, lvl_circle_dia), Image.ANTIALIAS)
-        lvl_bar_mask = mask.resize((lvl_circle_dia, lvl_circle_dia), Image.ANTIALIAS)
-        process.paste(lvl_circle, (circle_left, circle_top), lvl_bar_mask)
-
-        # draws mask
-        total_gap = 10
-        border = int(total_gap/2)
-        profile_size = lvl_circle_dia - total_gap
-        raw_length = profile_size * multiplier
-        # put in profile picture
-        output = ImageOps.fit(profile_image, (raw_length, raw_length), centering=(0.5, 0.5))
-        output = output.resize((profile_size, profile_size), Image.ANTIALIAS)
-        mask = mask.resize((profile_size, profile_size), Image.ANTIALIAS)
-        profile_image = profile_image.resize((profile_size, profile_size), Image.ANTIALIAS)
-        process.paste(profile_image, (circle_left + border, circle_top + border), mask)
-
-        # draw level box
-        level_left = 274
-        level_right = right_pos
-        draw.rectangle([(level_left, vert_pos), (level_right, vert_pos + title_height)], fill="#AAA") # box
-        lvl_text = "LEVEL {}".format(userinfo["servers"][server.id]["level"])
-        draw.text((self._center(level_left, level_right, lvl_text, level_label_fnt), vert_pos + 3), lvl_text,  font=level_label_fnt, fill=(110,110,110,255)) # Level #
-
-        # labels text colors
-        white_text = (240,240,240,255)
-        dark_text = (35, 35, 35, 230)
-        label_text_color = self._contrast(info_color, white_text, dark_text)
-
-        # draw text
-        grey_color = (110,110,110,255)
-        white_color = (230,230,230,255)
-
-        # put in server picture
-        server_size = content_bottom - content_top - 10
-        server_border_size = server_size + 4
-        radius = 20
-        light_border = (150,150,150,180)
-        dark_border = (90,90,90,180)
-        border_color = self._contrast(info_color, light_border, dark_border)
-
-        draw_server_border = Image.new('RGBA', (server_border_size*multiplier, server_border_size*multiplier),border_color)
-        draw_server_border = self._add_corners(draw_server_border, int(radius*multiplier/2))
-        draw_server_border = draw_server_border.resize((server_border_size, server_border_size), Image.ANTIALIAS)
-        server_image = server_image.resize((server_size*multiplier, server_size*multiplier), Image.ANTIALIAS)
-        server_image = self._add_corners(server_image, int(radius*multiplier/2)-10)
-        server_image = server_image.resize((server_size, server_size), Image.ANTIALIAS)
-        process.paste(draw_server_border, (circle_left + profile_size + 2*border + 8, content_top + 3), draw_server_border)
-        process.paste(server_image, (circle_left + profile_size + 2*border + 10, content_top + 5), server_image)
-
-        # name
-        left_text_align = 130
-        _write_unicode(self._truncate_text(self._name(user, 20), 20), left_text_align - 12, vert_pos + 3, name_fnt, header_u_fnt, grey_color) # Name
-
-        # divider bar
-        draw.rectangle([(187, 45), (188, 85)], fill=(160,160,160,220))
-
-        # labels
-        label_align = 200
-        draw.text((label_align, 38), "Server Rank:", font=general_info_fnt, fill=label_text_color) # Server Rank
-        draw.text((label_align, 58), "Server Exp:", font=general_info_fnt, fill=label_text_color) # Server Exp
-        draw.text((label_align, 78), "Credits:", font=general_info_fnt, fill=label_text_color) # Credit
-        # info
-        right_text_align = 290
-        rank_txt = "#{}".format(await self._find_server_rank(user, server))
-        draw.text((right_text_align, 38), self._truncate_text(rank_txt, 12) , font=general_info_fnt, fill=label_text_color) # Rank
-        exp_txt = "{}".format(await self._find_server_exp(user, server))
-        draw.text((right_text_align, 58), self._truncate_text(exp_txt, 12), font=general_info_fnt, fill=label_text_color) # Exp
-        try:
-            bank = self.bot.get_cog('Economy').bank
-            if bank.account_exists(user):
-                credits = bank.get_balance(user)
-            else:
-                credits = 0
-        except:
-            credits = 0
-        credit_txt = "${}".format(credits)
-        draw.text((right_text_align, 78), self._truncate_text(credit_txt, 12),  font=general_info_fnt, fill=label_text_color) # Credits
-
-        result = Image.alpha_composite(result, process)
-        result = await self._add_dropshadow(result)
-        result.save('data/leveler/temp/{}_rank.png'.format(user.id),'PNG', quality=100)
-    """
-
     async def draw_rank(self, user, server):
         # fonts
         font_thin_file = 'data/leveler/fonts/Uni_Sans_Thin.ttf'
@@ -2668,9 +2809,10 @@ class Leveler:
             bg_image = Image.open('data/leveler/temp/test_temp_rank_bg.png'.format(user.id)).convert('RGBA')
         except:
             image_name = "default"
-            # if image_name in self.backgrounds["profile"].keys():
-            db.users.update_one({'user_id': user.id},
-                                {'$set': {"rank_background": self.backgrounds["rank"][image_name]}})
+            uinfo = userinfo['rankbackgrounds'][image_name]
+            db.users.update_one({'user_id': userinfo['user_id']}, {'$set': {
+                "rank_background": uinfo['bg_img'],
+            }})
             await self.bot.say("Rank Background has been reset to default! Please run the Rank command again!")
             return
         profile_image = Image.open('data/leveler/temp/test_temp_rank_profile.png'.format(user.id)).convert('RGBA')
@@ -2826,107 +2968,6 @@ class Leveler:
         im.putalpha(alpha)
         return im
 
-    """
-    async def draw_levelup(self, user, server):
-        userinfo = db.users.find_one({'user_id':user.id})
-        # get urls
-        bg_url = userinfo["levelup_background"]
-        profile_url = user.avatar_url
-
-        # create image objects
-        bg_image = Image
-        profile_image = Image
-
-        async with aiohttp.get(bg_url) as r:
-            image = await r.content.read()
-        with open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id),'wb') as f:
-            f.write(image)
-        try:
-            async with aiohttp.get(profile_url) as r:
-                image = await r.content.read()
-        except:
-            async with aiohttp.get(default_avatar_url) as r:
-                image = await r.content.read()
-        with open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id),'wb') as f:
-            f.write(image)
-
-        bg_image = Image.open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id)).convert('RGBA')
-        profile_image = Image.open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id)).convert('RGBA')
-
-        # set canvas
-        width = 175
-        height = 65
-        bg_color = (255,255,255, 0)
-        result = Image.new('RGBA', (width, height), bg_color)
-        process = Image.new('RGBA', (width, height), bg_color)
-
-        # draw
-        draw = ImageDraw.Draw(process)
-
-        # puts in background
-        bg_image = bg_image.resize((width, height), Image.ANTIALIAS)
-        bg_image = bg_image.crop((0,0, width, height))
-        result.paste(bg_image, (0,0))
-
-        # draw transparent overlay
-        if "levelup_info_color" in userinfo.keys():
-            info_color = tuple(userinfo["levelup_info_color"])
-            info_color = (info_color[0], info_color[1], info_color[2], 150) # increase transparency
-        else:
-            info_color = (30, 30 ,30, 150)
-        draw.rectangle([(38, 5), (170, 60)], fill=info_color) # info portion
-
-        # draw level circle
-        multiplier = 6
-        lvl_circle_dia = 60
-        circle_left = 4
-        circle_top = int((height- lvl_circle_dia)/2)
-        raw_length = lvl_circle_dia * multiplier
-
-        # create mask
-        mask = Image.new('L', (raw_length, raw_length), 0)
-        draw_thumb = ImageDraw.Draw(mask)
-        draw_thumb.ellipse((0, 0) + (raw_length, raw_length), fill = 255, outline = 0)
-
-        # drawing level bar calculate angle
-        start_angle = -90 # from top instead of 3oclock
-
-        lvl_circle = Image.new("RGBA", (raw_length, raw_length))
-        draw_lvl_circle = ImageDraw.Draw(lvl_circle)
-        draw_lvl_circle.ellipse([0, 0, raw_length, raw_length], fill=(255, 255, 255, 220), outline = (255, 255, 255, 220))
-
-        # put on level bar circle
-        lvl_circle = lvl_circle.resize((lvl_circle_dia, lvl_circle_dia), Image.ANTIALIAS)
-        lvl_bar_mask = mask.resize((lvl_circle_dia, lvl_circle_dia), Image.ANTIALIAS)
-        process.paste(lvl_circle, (circle_left, circle_top), lvl_bar_mask)
-
-        # draws mask
-        total_gap = 6
-        border = int(total_gap/2)
-        profile_size = lvl_circle_dia - total_gap
-        raw_length = profile_size * multiplier
-        # put in profile picture
-        output = ImageOps.fit(profile_image, (raw_length, raw_length), centering=(0.5, 0.5))
-        output = output.resize((profile_size, profile_size), Image.ANTIALIAS)
-        mask = mask.resize((profile_size, profile_size), Image.ANTIALIAS)
-        profile_image = profile_image.resize((profile_size, profile_size), Image.ANTIALIAS)
-        process.paste(profile_image, (circle_left + border, circle_top + border), mask)
-
-        # fonts
-        level_fnt2 = ImageFont.truetype('data/leveler/fonts/font_bold.ttf', 19)
-        level_fnt = ImageFont.truetype('data/leveler/fonts/font_bold.ttf', 26)
-
-        # write label text
-        white_text = (240,240,240,255)
-        dark_text = (35, 35, 35, 230)
-        level_up_text = self._contrast(info_color, white_text, dark_text)
-        lvl_text = "LEVEL {}".format(userinfo["servers"][server.id]["level"])
-        draw.text((self._center(50, 170, lvl_text, level_fnt), 22), lvl_text, font=level_fnt, fill=level_up_text) # Level Number
-
-        result = Image.alpha_composite(result, process)
-        result = await self._add_dropshadow(result)
-        filename = 'data/leveler/temp/{}_level.png'.format(user.id)
-        result.save(filename,'PNG', quality=100)"""
 
     async def draw_levelup(self, user, server):
         # fonts
@@ -2960,9 +3001,10 @@ class Leveler:
             bg_image = Image.open('data/leveler/temp/{}_temp_level_bg.png'.format(user.id)).convert('RGBA')
         except:
             image_name = "default"
-            # if image_name in self.backgrounds["profile"].keys():
-            db.users.update_one({'user_id': user.id},
-                                {'$set': {"levelup_background": self.backgrounds["levelup"][image_name]}})
+            uinfo = userinfo['lvlbackgrounds'][image_name]
+            db.users.update_one({'user_id': userinfo['user_id']}, {'$set': {
+                "levelup_background": uinfo['bg_img'],
+            }})
             await self.bot.say("Level-up Background has been reset to default!")
             return
         profile_image = Image.open('data/leveler/temp/{}_temp_level_profile.png'.format(user.id)).convert('RGBA')
@@ -3310,9 +3352,9 @@ class Leveler:
                     "username" : user.name,
                     "servers": {},
                     "total_exp": 0,
-                    "profile_background": self.backgrounds["profile"]["default"],
-                    "rank_background": self.backgrounds["rank"]["default"],
-                    "levelup_background": self.backgrounds["levelup"]["default"],
+                    "profile_background": "http://i.imgur.com/8T1FUP5.jpg",
+                    "rank_background": "http://i.imgur.com/SorwIrc.jpg",
+                    "levelup_background": "http://i.imgur.com/eEFfKqa.jpg",
                     "title": "",
                     "info": "I am a mysterious person.",
                     "rep": 0,
@@ -3339,6 +3381,27 @@ class Leveler:
                         "servers.{}.level".format(server.id): 0,
                         "servers.{}.current_exp".format(server.id): 0,
                     }}, upsert = True)
+            if "backgrounds" not in userinfo:
+                def_bg = {
+                        "background_name": "default",
+                        "bg_img": "http://i.imgur.com/8T1FUP5.jpg",
+                        "price": 0,
+                    }
+                def_rbg = {
+                        "background_name": "default",
+                        "bg_img": "http://i.imgur.com/SorwIrc.jpg",
+                        "price": 0,
+                    }
+                def_lbg = {
+                        "background_name": "default",
+                        "bg_img": "http://i.imgur.com/eEFfKqa.jpg",
+                        "price": 0,
+                    }
+                db.users.update_one({'user_id': user.id}, {'$set': {
+                    "backgrounds.default": def_bg,#.{}".format("default"): {},
+                    "rankbackgrounds.default": def_rbg,
+                    "lvlbackgrounds.default": def_lbg,
+                }}, upsert=True)
         except AttributeError as e:
             pass
 
