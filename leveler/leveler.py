@@ -2000,6 +2000,16 @@ class Leveler:
             return
 
         bgs = db.backgrounds.find_one({'server_id':serverid})
+		
+        if not bgs:
+            settings = {
+                'backgrounds': {},
+                'rankbackgrounds': {},
+                'lvlbackgrounds': {},
+                'server_id': serverid
+            }
+            db.backgrounds.insert_one(settings)
+        bgs = db.backgrounds.find_one({'server_id':serverid})
 
         new_bg = {
                 "background_name": name,
