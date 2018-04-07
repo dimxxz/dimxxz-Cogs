@@ -1924,14 +1924,17 @@ class Leveler:
                 server_bgs = server_bg_info['backgrounds']
                 userinfox = userinfo['backgrounds']
                 bgx = "backgrounds"
+                xname = "Profile"
             elif type.lower() == "rank":
                 server_bgs = server_bg_info['rankbackgrounds']
                 userinfox = userinfo['rankbackgrounds']
                 bgx = "rankbackgrounds"
+                xname = "Rank"
             elif type.lower() == "levelup":
                 server_bgs = server_bg_info['lvlbackgrounds']
                 userinfox = userinfo['lvlbackgrounds']
                 bgx = "lvlbackgrounds"
+                xname = "Levelup"
             else:
                 await self.bot.say("{}lvlshop buy <type> <bg_name>\n"
                                    "type = profile, rank, levelup".format(ctx.prefix))
@@ -1941,7 +1944,7 @@ class Leveler:
                 if "{}".format(name) not in userinfox.keys():
                     bg_info = server_bgs[name]
                     if bg_info['price'] == -1:
-                        await self.bot.say('That background is not purchasable!')
+                        await self.bot.say('That {} background is not purchasable!'.format(xname))
                     elif bg_info['price'] == 0:
                         userinfox["{}".format(name)] = server_bgs[name]
                         db.users.update_one({'user_id':userinfo['user_id']}, {'$set':{
@@ -1951,7 +1954,7 @@ class Leveler:
                     else:
                         # use the economy cog
                         bank = self.bot.get_cog('Economy').bank
-                        await self.bot.say('**{}**, you are about to buy the background **{}** for **{} credits**. Confirm by typing *"yes"*'.format(self._is_mention(user), name, bg_info['price']))
+                        await self.bot.say('**{}**, you are about to buy the {} background **{}** for **{} credits**. Confirm by typing *"yes"*'.format(self._is_mention(user), xname, name, bg_info['price']))
                         answer = await self.bot.wait_for_message(timeout=15, author=user)
                         if answer is None:
                             await self.bot.say('Purchase canceled!')
@@ -1985,7 +1988,6 @@ class Leveler:
         server = ctx.message.server
 
         serverid = 'global'
-        servername = 'global'
 
         if '.' in name:
             await self.bot.say("Name can't contain `.`")
@@ -2021,14 +2023,17 @@ class Leveler:
             xbgs = bgs['backgrounds']
             xbg = "backgrounds"
             def_imgx = "http://i.imgur.com/8T1FUP5.jpg"
+            xname = "Profile"
         elif type.lower() == "rank":
             xbgs = bgs['rankbackgrounds']
             xbg = "rankbackgrounds"
             def_imgx = "http://i.imgur.com/SorwIrc.jpg"
+            xname = "Rank"
         elif type.lower() == "levelup":
             xbgs = bgs['lvlbackgrounds']
             xbg = "lvlbackgrounds"
             def_imgx = "http://i.imgur.com/eEFfKqa.jpg"
+            xname = "Levelup"
         else:
             await self.bot.say("{}lvlshop add <type> <link> <price> <bg_name>\n"
                                "type = profile, rank, levelup".format(ctx.prefix))
@@ -2040,7 +2045,7 @@ class Leveler:
             db.backgrounds.update_one({'server_id':serverid}, {'$set': {
                 xbg: xbgs
                 }})
-            await self.bot.say("Profile background **{}** has been added!".format(name))
+            await self.bot.say("{} background **{}** has been added!".format(xname, name))
         else:
             # update background in the server
             xbgs[name] = new_bg
@@ -2067,7 +2072,7 @@ class Leveler:
                             }})
                 except:
                     pass
-            await self.bot.say("Profile background **{}** has been updated!".format(name))
+            await self.bot.say("{} background **{}** has been updated!".format(xname, name))
 
         if "default" not in xbgs.keys():
             def_bg = {
@@ -2108,7 +2113,6 @@ class Leveler:
 
         #return
         serverid = 'global'
-        servername = 'global'
 
         # creates user if doesn't exist
         await self._create_user(user, server)
@@ -2129,12 +2133,15 @@ class Leveler:
         if type.lower() == "profile":
             xbgs = bgs['backgrounds']
             xbg = "backgrounds"
+            xname = "Profile"
         elif type.lower() == "rank":
             xbgs = bgs['rankbackgrounds']
             xbg = "rankbackgrounds"
+            xname = "Rank"
         elif type.lower() == "levelup":
             xbgs = bgs['lvlbackgrounds']
             xbg = "lvlbackgrounds"
+            xname = "Levelup"
         else:
             await self.bot.say(("{}lvlshop del <type> <link> <price> <bg_name>\n"
                                 "type = profile, rank, levelup".format(ctx.prefix)))
@@ -2165,9 +2172,9 @@ class Leveler:
                 except:
                     pass
 
-            await self.bot.say("Background **{}** has been removed!".format(name))
+            await self.bot.say("{} background **{}** has been removed!".format(xname,. name))
         else:
-            await self.bot.say("That background does not exist!")
+            await self.bot.say("That {} background does not exist!".format(xname))
 
     @lvlshop.command(name="give", pass_context=True, no_pm=True)
     @checks.is_owner()
@@ -2185,7 +2192,6 @@ class Leveler:
             return
 
         serverid = 'global'
-        servername = 'global'
 
         bgs = db.backgrounds.find_one({'server_id':serverid})
 
@@ -2193,14 +2199,17 @@ class Leveler:
             xbgs = bgs['backgrounds']
             xbg = "backgrounds"
             xuser = userinfo['backgrounds']
+            xname = "Profile"
         elif type.lower() == "rank":
             xbgs = bgs['rankbackgrounds']
             xbg = "rankbackgrounds"
             xuser = userinfo['rankbackgrounds']
+            xname = "Rank"
         elif type.lower() == "levelup":
             xbgs = bgs['lvlbackgrounds']
             xbg = "lvlbackgrounds"
             xuser = userinfo['lvlbackgrounds']
+            xname = "Levelup"
 
 
         bg_name = "{}".format(name)
@@ -2210,13 +2219,13 @@ class Leveler:
             await self.bot.say("That background doesn't exist!")
             return
         elif bg_name in xuser.keys():
-            await self.bot.say("**{}** already owns that background!".format(self._is_mention(user)))
+            await self.bot.say("**{}** already owns that {} background!".format(self._is_mention(user), xname))
             return
         else:
             xuser[bg_name] = xbgs[name]
             db.users.update_one({'user_id':user.id}, {'$set':{xbg: xuser}})
-            await self.bot.say("**{}** has just given **{}** the background **{}**!"
-                               "".format(org_user.name, user.name, name))
+            await self.bot.say("**{}** has just given **{}** the {} background **{}**!"
+                               "".format(org_user.name, user.name, xname, name))
 
 
     @lvlshop.command(name="inv", pass_context=True, no_pm=True)
@@ -2294,6 +2303,16 @@ class Leveler:
         await self._create_user(user, server)
         userinfo = db.users.find_one({'user_id': user.id})
         serverid = "global"
+        bginfo = db.backgrounds.find_one({'server_id': serverid})
+
+        if not  bginfo:
+            settings = {
+                'backgrounds': {},
+                'rankbackgrounds': {},
+                'lvlbackgrounds': {},
+                'server_id': serverid
+            }
+            db.backgrounds.insert_one(settings)
         bginfo = db.backgrounds.find_one({'server_id': serverid})
 
         if server.id in self.settings["disabled_servers"]:
