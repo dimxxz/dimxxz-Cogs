@@ -2096,12 +2096,76 @@ class Leveler:
                     userbgs = xuser
                     bg_name = "default"
                     if bg_name in userbgs.keys():
-                        userbgs[bg_name] = new_bg
+                        userbgs[bg_name] = def_bg
                         db.users.update_one({'user_id':user['user_id']}, {'$set': {
                             xbg: userbgs
                             }})
                 except:
                     pass
+					
+    @lvlshop.command(name="fix", pass_context=True, no_pm=True)
+    @checks.is_owner()
+    async def _lvlshfix(self, ctx, type:str):
+        """Fixes the default background for all users"""
+        user = ctx.message.author
+        server = ctx.message.server
+
+        serverid = 'global'
+
+        userxz = self._create_user(server, user)
+
+        bgs = db.backgrounds.find_one({'server_id':serverid})
+
+        if type.lower() == "profile":
+            xbgs = bgs['backgrounds']
+            xbg = "backgrounds"
+            def_imgx = "http://i.imgur.com/8T1FUP5.jpg"
+            xname = "Profile"
+        elif type.lower() == "rank":
+            xbgs = bgs['rankbackgrounds']
+            xbg = "rankbackgrounds"
+            def_imgx = "http://i.imgur.com/SorwIrc.jpg"
+            xname = "Rank"
+        elif type.lower() == "levelup":
+            xbgs = bgs['lvlbackgrounds']
+            xbg = "lvlbackgrounds"
+            def_imgx = "http://i.imgur.com/eEFfKqa.jpg"
+            xname = "Levelup"
+        else:
+            await self.bot.say('{}lvlshop fix <type>\ntype = profile, rank, levelup'.format(ctx.prefix))
+            return
+
+        name = "default"
+
+        if "xdefault" not in xbgs.keys():
+            def_bg = {
+                "background_name": "default",
+                "bg_img": def_imgx,
+                "price": 0,
+            }
+            xbgs["default"] = def_bg
+            db.backgrounds.update_one({'server_id': serverid}, {'$set': {
+                xbg: xbgs
+            }})
+            for user in db.users.find({}):
+                try:
+                    if type == "profile":
+                        xuser = user['backgrounds']
+                    elif type == "rank":
+                        xuser = user['rankbackgrounds']
+                    elif type == "levelup":
+                        xuser = user['lvlbackgrounds']
+                    user = self._bg_convert_dict(user)
+                    userbgs = xuser
+                    bg_name = "default"
+                    if bg_name in userbgs.keys():
+                        userbgs[bg_name] = def_bg
+                        db.users.update_one({'user_id':user['user_id']}, {'$set': {
+                            xbg: userbgs
+                            }})
+                except:
+                    pass
+            await self.bot.say("{} background **{}** has been updated!".format(xname, name))
 
     @lvlshop.command(name="del", pass_context=True, no_pm=True)
     @checks.is_owner()
