@@ -17,7 +17,7 @@ removed commands:
 - backgrounds, addprofilebg, delprofilebg, addrankbg, delrankbg, addlevelbg, dellevelbg
 
 added commands:
-+ lvlshop, lvlshop list, lvlshop buy, lvlshop add, lvlshop del, lvlshop inv, lvlshop give
++ lvlshop, lvlshop list, lvlshop buy, lvlshop add, lvlshop del, lvlshop inv, lvlshop give, lvlshop fix
 
 
 ----------------------------------------------------------------------------------------------
@@ -31,6 +31,7 @@ Use the default backgrounds from the backgrounds.json in data/leveler if needed.
 lvlshop allows you to set the price for each background.
 Purchased backgrounds will be applied to the buyer's account.
 Background switching still functions with the profileset, rankset and levelupset commands.
+
 ----------------------------------------------------------------------------------------------
 
 
