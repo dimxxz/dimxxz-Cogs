@@ -3502,8 +3502,8 @@ class Leveler:
             pass
 
     def _truncate_text(self, text, max_length):
-        if len(text) > max_length:            
-			if text.strip('$').isdigit():
+        if len(text) > max_length:
+            if text.strip('$').isdigit():
                 text = int(text.strip('$'))
                 return "${:.2E}".format(text)
             return text[:max_length-3] + "..."
