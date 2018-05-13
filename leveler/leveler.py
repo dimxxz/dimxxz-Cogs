@@ -2454,8 +2454,8 @@ class Leveler:
         font_file = 'data/leveler/fonts/YasashisaAntique.ttf'
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
-        name_fnt = ImageFont.truetype(font_heavy_file, 24)
-        name_u_fnt = ImageFont.truetype(font_unicode_file, 22)
+        name_fnt = ImageFont.truetype(font_heavy_file, 22)
+        name_u_fnt = ImageFont.truetype(font_unicode_file, 20)
         title_fnt = ImageFont.truetype(font_heavy_file, 15)
         title_u_fnt = ImageFont.truetype(font_unicode_file, 15)
         label_fnt = ImageFont.truetype(font_bold_file, 18)
@@ -2604,7 +2604,7 @@ class Leveler:
         head_align = 140
         # determine info text color
         info_text_color = self._contrast(info_fill, white_color, dark_color)
-        _write_unicode(self._truncate_text(user.name, 22).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) # NAME
+        _write_unicode(self._truncate_text(user.name, 15).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) # NAME
         _write_unicode(userinfo["title"].upper(), head_align, 170, title_fnt, title_u_fnt, info_text_color)
 
         # draw divider
@@ -2615,7 +2615,8 @@ class Leveler:
         #rep_text = "{} REP".format(userinfo["rep"])
         rep_text = "{}".format(userinfo["rep"])
         _write_unicode("❤", 10, 9, rep_fnt, rep_u_fnt, rep_fill)#info_text_color)
-        draw.text((self._center(60, 60, rep_text, rep_fnt), 6), rep_text,  font=rep_fnt, fill=rep_fill)#info_text_color) # Exp Text
+        _write_unicode(rep_text, 35, 6, rep_fnt, rep_u_fnt, rep_fill)
+        #draw.text((self._center(60, 60, rep_text, rep_fnt), 6), rep_text,  font=rep_fnt, fill=rep_fill)#info_text_color) # Exp Text
 
         lvl_left = 100
         label_align = 362 # vertical
