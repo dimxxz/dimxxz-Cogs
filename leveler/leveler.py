@@ -2217,24 +2217,27 @@ class Leveler:
                 xbg:xbgs,
                 }})
 
-            for user_info_temp in db.users.find({}):
-                if type.lower() == "profile":
-                    xuser = user_info_temp['backgrounds']
-                elif type.lower() == "rank":
-                    xuser = user_info_temp['rankbackgrounds']
-                elif type.lower() == "levelup":
-                    xuser = user_info_temp['lvlbackgrounds']
-                try:
-                    user_info_temp = self._bg_convert_dict(user_info_temp)
+            try:
+                for user_info_temp in db.users.find({}):
+                    if type.lower() == "profile":
+                        xuser = user_info_temp['backgrounds']
+                    elif type.lower() == "rank":
+                        xuser = user_info_temp['rankbackgrounds']
+                    elif type.lower() == "levelup":
+                        xuser = user_info_temp['lvlbackgrounds']
+                    try:
+                        user_info_temp = self._bg_convert_dict(user_info_temp)
 
-                    bg_name = "{}".format(name)
-                    if bg_name in xuser.keys():
-                        del xuser[bg_name]
-                        db.users.update_one({'user_id':user_info_temp['user_id']}, {'$set':{
-                            xbg:xuser,
-                            }})
-                except:
-                    pass
+                        bg_name = "{}".format(name)
+                        if bg_name in xuser.keys():
+                            del xuser[bg_name]
+                            db.users.update_one({'user_id':user_info_temp['user_id']}, {'$set':{
+                                xbg:xuser,
+                                }})
+                    except:
+                        pass
+            except:
+                pass
 
             await self.bot.say("{} background **{}** has been removed!".format(xname,. name))
         else:
