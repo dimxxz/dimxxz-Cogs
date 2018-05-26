@@ -42,7 +42,8 @@ bg_credits = {
 # directory
 user_directory = "data/leveler/users"
 
-prefix = fileIO("data/red/settings.json", "load")['PREFIXES']
+pref = fileIO("data/red/settings.json", "load")#['PREFIXES']
+prefix = pref['PREFIXES']
 default_avatar_url = "http://i.imgur.com/XPDO9VH.jpg"
 
 try:
@@ -963,39 +964,49 @@ class Leveler:
     @checks.admin_or_permissions(manage_server=True)
     @lvladmin.command(name="chignore", pass_context=True, no_pm=True)
     async def __channelignore(self, ctx, channel):
-        """Set channels to ignore list.
-        
-        Please use Channel IDs only! Not Channel mentions!"""
+        """Set channels to ignore list."""
         server = ctx.message.server
-        chid = fileIO("data/leveler/channels.json", "load")
-        if server.id not in chid:
-            chid[server.id] = {}
-            newserv = chid
-            fileIO("data/leveler/channels.json", "save", newserv)
-            return
+        channeldb = db.channels.find_one({'server_id': server.id})
+        if not channeldb:
+            settings = {
+                'server_id': server.id,
+                'channels': {},
+            }
+            db.channels.insert_one(settings)
 
-        if channel in chid[server.id]:
-            chid[server.id].remove(channel)
-            fileIO("data/leveler/channels.json", "save", chid)
-            msg = ("Channel has been removed from the ignore list!")
-            em = discord.Embed(description=msg, color=discord.Color.green())
-            await self.bot.say(embed=em)
-            return
-        elif channel not in chid[server.id]:
-            try:
-                chid[server.id].append(channel)
-                fileIO("data/leveler/channels.json", "save", chid)
+        channeldb = db.channels.find_one({'server_id': server.id})
+
+        new_chan = {
+            channel.id: channel.name
+        }
+
+        chan = channeldb['channels']
+        chan_name = 'channels'
+
+        try:
+            if channel.id not in chan.keys():
+                chan[channel.id] = new_chan
+                db.channels.update_one({'server_id': server.id}, {'$set': {
+                    chan_name: chan
+                }})
                 msg = ("Channel has been added to the ignore list!")
                 em = discord.Embed(description=msg, color=discord.Color.green())
                 await self.bot.say(embed=em)
                 return
-            except:
-                chid[server.id] = [channel]
-                fileIO("data/leveler/channels.json", "save", chid)
-                msg = ("Channel has been added to the ignore list!")
+
+            elif channel.id in chan.keys():
+                del chan[channel.id]
+                db.channels.update_one({'server_id': server.id}, {'$set': {
+                    chan_name: chan
+                }})
+                msg = ("Channel has been removed from the ignore list!")
                 em = discord.Embed(description=msg, color=discord.Color.green())
                 await self.bot.say(embed=em)
-                pass
+                return
+        except:
+            msg = ("Invalid Channel!")
+            em = discord.Embed(description=msg, color=discord.Color.red())
+            await self.bot.say(embed=em)
 
     @lvladmin.command(pass_context=True, no_pm=True)
     async def msgcredits(self, ctx, credits:int = 0):
@@ -2604,7 +2615,7 @@ class Leveler:
         head_align = 140
         # determine info text color
         info_text_color = self._contrast(info_fill, white_color, dark_color)
-        _write_unicode(self._truncate_text(user.name, 15).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) # NAME
+        _write_unicode(self._truncate_text(user.name, 14).upper(), head_align, 142, name_fnt, name_u_fnt, info_text_color) # NAME
         _write_unicode(userinfo["title"].upper(), head_align, 170, title_fnt, title_u_fnt, info_text_color)
 
         # draw divider
@@ -2852,11 +2863,11 @@ class Leveler:
         font_file = 'data/leveler/fonts/YasashisaAntique.ttf'
         font_bold_file = 'data/leveler/fonts/SourceSansPro-Semibold.ttf'
 
-        name_fnt = ImageFont.truetype(font_heavy_file, 22)
+        name_fnt = ImageFont.truetype(font_heavy_file, 20)
         name_u_fnt = ImageFont.truetype(font_unicode_file, 24)
         label_fnt = ImageFont.truetype(font_bold_file, 16)
         exp_fnt = ImageFont.truetype(font_bold_file, 9)
-        large_fnt = ImageFont.truetype(font_file, 20)
+        large_fnt = ImageFont.truetype(font_file, 19)
         large_bold_fnt = ImageFont.truetype(font_bold_file, 24)
         symbol_u_fnt = ImageFont.truetype(font_unicode_file, 15)
 
@@ -3178,7 +3189,13 @@ class Leveler:
 
     async def _handle_on_message(self, message):
         #try:
+        server = message.server
         if message.content.lower().startswith("{}".format(prefix)):
+            try:
+                if message.content.lower().startswith("{}".format(pref[server.id]['PREFIXES'])):
+                    return
+            except:
+                pass
             return
         else:
             text = message.content
@@ -3200,15 +3217,15 @@ class Leveler:
                 userinfo["chat_block"] = 0
 
             if float(curr_time) - float(userinfo["chat_block"]) >= 120 and not any(text.startswith(x) for x in prefix):
-                if server.id in self.chid:
-                    if channel.id in self.chid[server.id]:
-                        return
-                    else:
-                        pass
+                channeldb = db.channels.find_one({'server_id': server.id})
+                chan = channeldb['channels']
+                if channel.id in chan.keys():
+                    return
+                else:
+                    pass
                 await self._process_exp(message, userinfo, random.randint(15, 20))
                 await self._give_chat_credit(user, server)
-            #except AttributeError as e:
-                #pass
+
 
     async def _process_exp(self, message, userinfo, exp:int):
         server = message.author.server
