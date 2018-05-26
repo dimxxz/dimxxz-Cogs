@@ -3275,19 +3275,14 @@ class Leveler:
                 if server_roles != None:
                     for role in server_roles['roles'].keys():
                         if int(server_roles['roles'][role]['level']) == int(new_level):
-                            role_obj = discord.utils.find(lambda r: r.name == role, server.roles)
-                            await self.bot.add_roles(user, role_obj)
-                            await self.bot.send_message(channel, "{0}, you obtained the role **{1}** for reaching level **{2}**!".format(user.mention, role_obj, new_level))
-                            try:
-                                await self.bot.add_roles(user, role_obj)
-                            except:
-                                pass
-
                             if server_roles['roles'][role]['remove_role'] != None:
                                 remove_role_obj = discord.utils.find(
                                     lambda r: r.name == server_roles['roles'][role]['remove_role'], server.roles)
                                 if remove_role_obj != None:
                                     await self.bot.remove_roles(user, remove_role_obj)
+                            await asyncio.sleep(1)
+                            role_obj = discord.utils.find(lambda r: r.name == role, server.roles)
+                            await self.bot.add_roles(user, role_obj)
             except:
                 await self.bot.send_message(channel, 'Role was not set. Missing Permissions!')
 
