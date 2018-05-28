@@ -963,7 +963,7 @@ class Leveler:
 		
     @checks.admin_or_permissions(manage_server=True)
     @lvladmin.command(name="chignore", pass_context=True, no_pm=True)
-    async def __channelignore(self, ctx, channel):
+    async def __channelignore(self, ctx, channel:discord.Channel=None):
         """Set channels to ignore list."""
         server = ctx.message.server
         channeldb = db.channels.find_one({'server_id': server.id})
