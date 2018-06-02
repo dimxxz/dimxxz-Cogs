@@ -1,0 +1,8 @@
+{
+    "AUTHOR" : "dimxxz",
+    "INSTALL_MSG" : "Thank you for installing my youtube search cog!",
+    "NAME" : "youtube search",
+    "SHORT" : "ytsearch",
+    "DESCRIPTION" : "Searches youtube for the given text and posts the video to discord",
+	  "TAGS": ["utility"]
+}
