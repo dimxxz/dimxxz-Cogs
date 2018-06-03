@@ -8,6 +8,8 @@ New repo:
 https://gitlab.com/dimxxz/dimxxz-Cogs
 ```
 
+----------------------------------------------------------------------------
+
 Here are some of my own cogs and also some modified cogs of other users.
 
 The modified cogs are either corrected or extended. It depends on the cog itself.
