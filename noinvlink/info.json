@@ -1,8 +1,0 @@
-{
-    "AUTHOR" : "dimxxz",
-    "INSTALL_MSG" : "Thank you for installing my invite link blocker! I hope it will be useful to you!",
-    "NAME" : "invite block cog",
-    "SHORT" : "invite block",
-    "DESCRIPTION" : "Blocks and removes discord server invite links.",
-	  "TAGS": ["utility"]
-}
