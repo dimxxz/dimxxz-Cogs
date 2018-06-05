@@ -1,8 +1,0 @@
-{
-    "AUTHOR" : "dimxxz",
-    "INSTALL_MSG" : "Thank you for installing my away cog!",
-    "NAME" : "Away cog",
-    "SHORT" : "away",
-    "DESCRIPTION" : "Tells users that you are away.",
-    "TAGS": ["utility"]
-}
